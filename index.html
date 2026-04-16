@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ortho Dog">
+<meta name="theme-color" content="#3D2B1F">
+<title>Ortho Dog — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brown:#3D2B1F;--brown2:#5C3D2A;--tan:#A07850;--tan2:#C9A878;
+  --cream:#FAF7F2;--paper:#F2EDE4;--border:#E4DDD2;
+  --white:#FFFFFF;--slate:#4A4540;--muted:#8A837C;
+  --gold:#D4A843;--gold-bg:#FFF8E8;
+  --quinn:#1A2E1A;--green:#5C8A3C;--green-light:#EDF4E6;
+  --danger:#C0392B;--danger-bg:#FDEDEC;
+  --success:#27AE60;--success-bg:#EAFAF1;
+  --warning:#E67E22;--warning-bg:#FEF9E7;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--brown);min-height:100vh;padding-bottom:80px;}
+
+/* NAV */
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;background:var(--brown);display:flex;align-items:center;padding:0 0 env(safe-area-inset-bottom);z-index:100;border-top:1px solid var(--brown2);}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px;cursor:pointer;font-size:9px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;gap:4px;transition:color 0.15s;}
+.nav-tab.active{color:var(--tan2);}
+.nav-icon{font-size:18px;line-height:1;}
+
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* TOP BAR */
+.topbar{background:var(--brown);padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;}
+.topbar-logo{font-family:'Fraunces',serif;font-size:17px;color:var(--cream);font-weight:300;}
+.topbar-logo em{color:var(--tan2);font-style:italic;}
+.tright{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tbadge{font-size:10px;font-weight:600;color:var(--tan2);background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:20px;}
+
+/* APPROVAL BADGE */
+.approval-count{background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* QUINN HEADER */
+.quinn-header{background:var(--quinn);padding:18px 16px 14px;}
+.qh-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.qh-av{width:44px;height:44px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:16px;border:2px solid rgba(255,255,255,0.2);position:relative;flex-shrink:0;}
+.qh-dot{position:absolute;bottom:0;right:0;width:11px;height:11px;border-radius:50%;background:var(--gold);border:2px solid var(--quinn);animation:pulse 1.5s infinite;}
+.qh-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.qh-stat{background:rgba(255,255,255,0.07);border-radius:8px;padding:8px;text-align:center;}
+.qh-n{font-size:18px;font-weight:600;color:#fff;}
+.qh-l{font-size:8px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;margin-top:1px;}
+
+/* APPROVAL QUEUE */
+.approval-section{margin:12px 16px;}
+.approval-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ah-title{font-size:13px;font-weight:700;color:var(--brown);}
+.approval-card{background:var(--white);border-radius:12px;border:1.5px solid var(--border);margin-bottom:8px;overflow:hidden;}
+.approval-card.pending{border-color:var(--warning);}
+.ac-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--warning-bg);border-bottom:1px solid var(--border);}
+.ac-agent{font-size:11px;font-weight:700;color:var(--warning);}
+.ac-type{font-size:10px;color:var(--muted);margin-left:auto;}
+.ac-content{padding:12px 14px;}
+.ac-title{font-size:13px;font-weight:600;color:var(--brown);margin-bottom:4px;}
+.ac-preview{font-size:12px;color:var(--slate);line-height:1.6;margin-bottom:12px;}
+.ac-actions{display:flex;gap:8px;}
+.btn-approve{flex:1;padding:10px;background:var(--success);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.02em;}
+.btn-reject{flex:1;padding:10px;background:var(--danger-bg);color:var(--danger);border:1.5px solid var(--danger);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.btn-edit{flex:1;padding:10px;background:var(--paper);color:var(--brown);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+
+.approved-card{background:var(--success-bg);border-color:#A9DFBF;}
+.ac-approved-badge{font-size:10px;font-weight:700;color:var(--success);background:#fff;padding:2px 8px;border-radius:4px;}
+
+/* AGENTS */
+.agent-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--white);transition:background 0.15s;}
+.agent-item:last-child{border-bottom:none;}
+.agent-item:active{background:var(--paper);}
+.ai-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;position:relative;}
+.ai-dot{position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;background:var(--border);border:2px solid #fff;}
+.ai-dot.active{background:var(--success);animation:pulse 1.5s infinite;}
+.ai-info{flex:1;min-width:0;}
+.ai-name{font-size:13px;font-weight:600;}
+.ai-role{font-size:10px;color:var(--muted);}
+.ai-skill{font-size:10px;color:var(--green);font-weight:500;margin-top:1px;}
+.ai-output{font-size:11px;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* SKILLS BADGE */
+.skill-badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;background:var(--green-light);color:var(--green);margin-right:3px;margin-top:2px;}
+
+/* SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:199;display:none;}
+.sheet-overlay.show{display:block;}
+.detail-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:20px 20px 0 0;padding:20px 20px calc(90px + env(safe-area-inset-bottom));max-height:85vh;overflow-y:auto;z-index:200;transform:translateY(100%);transition:transform 0.3s ease;box-shadow:0 -4px 40px rgba(0,0,0,0.15);}
+.detail-sheet.open{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 16px;}
+
+/* CHAT */
+.chat-area{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:400px;}
+.chat-msg{display:flex;gap:10px;animation:rise 0.25s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chat-msg.you{flex-direction:row-reverse;}
+.cm-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.cm-body{max-width:78%;}
+.cm-name{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.chat-msg.you .cm-name{text-align:right;}
+.bubble{padding:10px 13px;border-radius:4px 14px 14px 14px;font-size:13px;line-height:1.6;color:var(--slate);background:var(--white);border:1px solid var(--border);}
+.you-bubble{background:var(--brown);color:#fff;border-color:var(--brown);border-radius:14px 4px 14px 14px;}
+.quinn-bubble{background:var(--quinn);color:var(--cream);border-color:transparent;}
+.typing{display:inline-flex;gap:4px;align-items:center;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:4px 14px 14px 14px;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{transform:scale(0.55);opacity:0.3}40%{transform:scale(1);opacity:1}}
+.chat-input-bar{position:sticky;bottom:80px;background:var(--white);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;align-items:center;}
+.chat-input{flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--paper);outline:none;color:var(--brown);}
+.chat-input:focus{border-color:var(--tan);}
+.chat-send{width:36px;height:36px;border-radius:50%;background:var(--brown);color:#fff;border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-send:disabled{opacity:0.4;}
+
+/* SKILLS PAGE */
+.skill-card{background:var(--white);border-radius:12px;border:1px solid var(--border);margin:0 16px 10px;overflow:hidden;}
+.sk-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.sk-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.sk-name{font-size:13px;font-weight:600;}
+.sk-role{font-size:10px;color:var(--muted);}
+.sk-body{padding:12px 14px;}
+.sk-skill-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.sk-skill-row:last-child{border-bottom:none;}
+.sk-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.sk-info{}
+.sk-skill-name{font-size:12px;font-weight:600;color:var(--brown);margin-bottom:2px;}
+.sk-skill-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.sk-status{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:0.04em;margin-left:auto;white-space:nowrap;flex-shrink:0;}
+.status-live{background:var(--green-light);color:var(--green);}
+.status-monday{background:var(--gold-bg);color:var(--gold);}
+.status-approval{background:var(--danger-bg);color:var(--danger);}
+
+.section-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;padding:14px 16px 6px;}
+.divider{height:1px;background:var(--border);margin:0 16px;}
+
+.big-btn{width:calc(100% - 32px);margin:0 16px;padding:14px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.03em;}
+.btn-brown{background:var(--brown);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- SCREEN: HOME -->
+<div class="screen active" id="screen-home">
+  <div class="quinn-header">
+    <div class="qh-row">
+      <div class="qh-av">Q<div class="qh-dot"></div></div>
+      <div>
+        <div style="font-family:'Fraunces',serif;font-size:19px;color:#fff;font-weight:300;">Quinn</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;">CEO Agent · Ortho Dog</div>
+      </div>
+      <div style="margin-left:auto;font-size:12px;color:rgba(255,255,255,0.4);font-variant-numeric:tabular-nums;" id="homeClock"></div>
+    </div>
+    <div class="qh-stats">
+      <div class="qh-stat"><div class="qh-n">12</div><div class="qh-l">Leads</div></div>
+      <div class="qh-stat"><div class="qh-n">8</div><div class="qh-l">Outreach</div></div>
+      <div class="qh-stat"><div class="qh-n">24</div><div class="qh-l">Orders</div></div>
+      <div class="qh-stat"><div class="qh-n" style="color:var(--gold);" id="approvalCount">4</div><div class="qh-l">Approvals</div></div>
+    </div>
+  </div>
+
+  <!-- APPROVAL QUEUE -->
+  <div class="approval-section">
+    <div class="approval-header">
+      <div class="ah-title">⚠️ Needs Your Approval</div>
+      <div class="approval-count" id="approvalBadge">4 pending</div>
+    </div>
+    <div id="approvalQueue"></div>
+  </div>
+
+  <div class="section-lbl">Your Team</div>
+  <div style="background:var(--white);border-radius:14px;margin:0 16px;overflow:hidden;border:1px solid var(--border);">
+    <div id="agentList"></div>
+  </div>
+
+  <div style="padding:16px;">
+    <button class="big-btn btn-green" style="width:100%;margin:0;" onclick="showTab('chat')">▶ Run Morning Briefing</button>
+  </div>
+</div>
+
+<!-- SCREEN: APPROVALS -->
+<div class="screen" id="screen-approvals">
+  <div class="topbar">
+    <div class="topbar-logo">Ortho <em>Dog</em> <span style="font-size:11px;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-style:normal;font-weight:400;">· Approvals</span></div>
+    <div class="tright"><div class="approval-count" id="approvalBadge2">4 pending</div></div>
+  </div>
+
+  <div style="padding:12px 16px;background:var(--danger-bg);border-bottom:1px solid #F5B7B1;">
+    <div style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:2px;">Nothing goes out without your OK</div>
+    <div style="font-size:11px;color:#C0392B;line-height:1.5;">Every email, Slack message, social post, and briefing waits here until you approve, edit, or reject it.</div>
+  </div>
+
+  <div id="fullApprovalQueue" style="padding:12px 16px;"></div>
+</div>
+
+<!-- SCREEN: CHAT -->
+<div class="screen" id="screen-chat">
+  <div class="topbar">
+    <div class="qh-av" style="width:34px;height:34px;font-size:12px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;border:2px solid rgba(255,255,255,0.2);">Q</div>
+    <div style="margin-left:6px;">
+      <div style="font-size:14px;font-weight:600;color:#fff;font-family:'Fraunces',serif;">Quinn</div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.5);">CEO Agent · all outputs need your approval</div>
+    </div>
+  </div>
+  <div class="chat-area" id="chatArea"></div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="chatInput" placeholder="Ask Quinn anything…" />
+    <button class="chat-send" id="chatSend" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<!-- SCREEN: SKILLS -->
+<div class="screen" id="screen-skills">
+  <div class="topbar">
+    <div class="topbar-logo">Ortho <em>Dog</em> <span style="font-size:11px;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-style:normal;font-weight:400;">· Agent Skills</span></div>
+  </div>
+  <div class="section-lbl">Every agent's real capabilities</div>
+  <div id="skillsList"></div>
+</div>
+
+<!-- SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+<div class="detail-sheet" id="detailSheet">
+  <div class="sheet-handle"></div>
+  <div id="sheetContent"></div>
+</div>
+
+<!-- NAV -->
+<div class="mobile-nav">
+  <div class="nav-tab active" id="tab-home" onclick="showTab('home')">
+    <div class="nav-icon">🏠</div>Home
+  </div>
+  <div class="nav-tab" id="tab-approvals" onclick="showTab('approvals')">
+    <div class="nav-icon">✅</div>Approve
+  </div>
+  <div class="nav-tab" id="tab-chat" onclick="showTab('chat')">
+    <div class="nav-icon">💬</div>Quinn
+  </div>
+  <div class="nav-tab" id="tab-skills" onclick="showTab('skills')">
+    <div class="nav-icon">⚡</div>Skills
+  </div>
+</div>
+
+<script>
+// ── APPROVAL QUEUE ────────────────────────────────────────────────────
+const APPROVALS = [
+  {
+    id:1, agent:"Morgan", agentColor:"#7A4F00", agentBg:"#FFF4E0",
+    type:"Instagram Reel", status:"pending",
+    title:"Baxter's Recovery Story — Reel Script",
+    preview:"Slide 1: 'My dog Baxter tore his CCL. We were told surgery was the only option...' Slide 2: 'Then we found Ortho Dog.' Slide 3: 'He's running again. No surgery. Just the right brace.' Caption: Real dogs. Real recovery. 🐾 Link in bio.",
+    destination:"Instagram @orthodoginc",
+    requiresApproval:true
+  },
+  {
+    id:2, agent:"Morgan", agentColor:"#7A4F00", agentBg:"#FFF4E0",
+    type:"Email Campaign", status:"pending",
+    title:"Vet Referral Email — 'Why Vets Love Ortho Dog'",
+    preview:"Subject: Your patients don't have to choose surgery. Hi [Vet Name], We work with rehab specialists across NC, SC, and GA to give CCL patients a non-surgical option...",
+    destination:"Vet outreach list — 47 contacts",
+    requiresApproval:true
+  },
+  {
+    id:3, agent:"Quinn", agentColor:"#5C8A3C", agentBg:"#EDF4E6",
+    type:"Morning Briefing Email", status:"pending",
+    title:"Wednesday Morning Brief — Elsa + Adam",
+    preview:"Good morning Elsa and Adam. Here's your team report: Reagan flagged 2 HOT leads. Abby sent 8 emails — Dr. Kim replied warm. Aly has Thursday drop-off confirmed. Sadie updated pipeline. 24 orders shipped. 4 five-star reviews this week...",
+    destination:"elsaboyette@gmail.com + gaboyette722@gmail.com",
+    requiresApproval:true
+  },
+  {
+    id:4, agent:"Quinn", agentColor:"#5C8A3C", agentBg:"#EDF4E6",
+    type:"Slack Alert", status:"pending",
+    title:"HOT Lead Alert — Dr. Kim replied",
+    preview:"🔥 HOT LEAD: Dr. Kim at Blue Ridge Animal Rehab replied to Abby's outreach. She's interested in wholesale pricing and wants to trial the Cruciate Care Knee Brace. Reagan scored her 94/100. Action needed today.",
+    destination:"#quinn-alerts Slack channel",
+    requiresApproval:true
+  },
+];
+
+let approvals = [...APPROVALS];
+let chatRunning = false;
+let chatHistory = [];
+
+// ── AGENTS ────────────────────────────────────────────────────────────
+const AGENTS = [
+  { i:"RE", name:"Reagan", role:"Lead Finder", bg:"#EEEDFE", color:"#3C3489",
+    output:"12 vet clinics · 2 HOT — awaiting approval to alert Abby",
+    skills:["Web search — finds real vet clinics","Scores leads 0-100 automatically","Flags HOT leads to Quinn","Sends list to Quinn for approval before Abby sees it"] },
+  { i:"AB", name:"Abby", role:"Outreach Tracker", bg:"#FBEAF0", color:"#72243E",
+    output:"8 emails drafted — all waiting your approval before sending",
+    skills:["Writes personalized outreach emails","Drafts go to approval queue first","Monitors Gmail for replies","Flags warm replies to Quinn"] },
+  { i:"AL", name:"Aly", role:"Operations", bg:"#FAECE7", color:"#712B13",
+    output:"Drop-off Thu 10am — calendar invite pending your approval",
+    skills:["Creates Google Calendar events","Events sent to approval queue first","Tracks sample kit inventory","Logs all field activity"] },
+  { i:"SA", name:"Sadie", role:"Pipeline Manager", bg:"#E6F1FB", color:"#0C447C",
+    output:"CRM updated — stage moves logged in Google Sheets",
+    skills:["Reads + writes to Google Sheets CRM","Pipeline stage updates","Flags stalled leads to Quinn","Weekly pipeline report"] },
+  { i:"FA", name:"Fawn", role:"Partner Relations", bg:"#FAEEDA", color:"#633806",
+    output:"Paws & Claws follow-up — email drafted, needs approval",
+    skills:["Writes relationship emails","All emails go to approval queue","Tracks referrals in CRM","Renewal management"] },
+  { i:"CA", name:"Casey", role:"Fulfillment & Reviews", bg:"#EAF3DE", color:"#27500A",
+    output:"Fit check emails drafted — waiting your approval",
+    skills:["Drafts fit check emails (day 3)","Review request emails — approval required","Logs orders in CRM","Sends customer wins to Morgan"] },
+  { i:"MO", name:"Morgan", role:"Marketing Agent", bg:"#FFF4E0", color:"#7A4F00",
+    output:"4 pieces queued — reel, email, ad, blog. All need approval",
+    skills:["Instagram + TikTok reel scripts","Email campaigns","Google ad copy","SEO blog drafts","Nothing publishes without your sign-off"] },
+];
+
+// ── SKILLS DATA ───────────────────────────────────────────────────────
+const SKILLS = [
+  { i:"RE", name:"Reagan", role:"Lead Finder", bg:"#EEEDFE", color:"#3C3489",
+    skills:[
+      {icon:"🔍", name:"Web Search", desc:"Searches Google for real vet clinics, rehab centers, and pet influencers in your market", status:"live"},
+      {icon:"🎯", name:"Target Scoring", desc:"Scores every lead 0-100 based on CCL focus, territory, volume, and warmth", status:"live"},
+      {icon:"🔥", name:"HOT Lead Flagging", desc:"Automatically flags leads scoring 80+ as HOT and sends to Quinn", status:"live"},
+      {icon:"✅", name:"Approval Gate", desc:"Lead list goes to your approval queue before Abby sees a single name", status:"approval"},
+    ]},
+  { i:"AB", name:"Abby", role:"Outreach Tracker", bg:"#FBEAF0", color:"#72243E",
+    skills:[
+      {icon:"✍️", name:"Email Writing", desc:"Writes personalized outreach emails for every lead Reagan flags", status:"live"},
+      {icon:"✅", name:"Approval Gate", desc:"Every email drafted goes to your queue — nothing sends until you approve", status:"approval"},
+      {icon:"📬", name:"Gmail Monitoring", desc:"Reads replies from your Gmail and flags warm responses to Quinn", status:"live"},
+      {icon:"📞", name:"Follow-up Scheduling", desc:"Drafts follow-up emails for no-reply leads after 5 days", status:"live"},
+    ]},
+  { i:"AL", name:"Aly", role:"Operations Tracker", bg:"#FAECE7", color:"#712B13",
+    skills:[
+      {icon:"📅", name:"Google Calendar", desc:"Creates calendar events for drop-offs and vet visits automatically", status:"live"},
+      {icon:"✅", name:"Approval Gate", desc:"Calendar invites go to your queue before being created", status:"approval"},
+      {icon:"📦", name:"Inventory Tracking", desc:"Logs sample kit contents and flags when stock is low", status:"live"},
+      {icon:"📝", name:"Activity Logging", desc:"Logs all field activity in the CRM Google Sheet", status:"live"},
+    ]},
+  { i:"SA", name:"Sadie", role:"Pipeline Manager", bg:"#E6F1FB", color:"#0C447C",
+    skills:[
+      {icon:"📊", name:"Google Sheets CRM", desc:"Reads and writes to your live CRM spreadsheet in real time", status:"live"},
+      {icon:"🔄", name:"Stage Updates", desc:"Moves leads through pipeline stages and logs every change", status:"live"},
+      {icon:"⚠️", name:"Stalled Lead Alerts", desc:"Flags leads with no activity in 7+ days to Quinn", status:"live"},
+      {icon:"📋", name:"Weekly Report", desc:"Generates pipeline summary every Monday for Quinn's brief", status:"live"},
+    ]},
+  { i:"FA", name:"Fawn", role:"Partner Relations", bg:"#FAEEDA", color:"#633806",
+    skills:[
+      {icon:"✍️", name:"Relationship Emails", desc:"Writes follow-up and nurture emails for every active partner", status:"live"},
+      {icon:"✅", name:"Approval Gate", desc:"All emails drafted — nothing sends until you approve", status:"approval"},
+      {icon:"🔗", name:"Referral Tracking", desc:"Logs referrals in CRM and notifies Casey when a new client is signed", status:"live"},
+      {icon:"🔄", name:"Renewal Management", desc:"Flags partners due for renewal 30 days in advance", status:"live"},
+    ]},
+  { i:"CA", name:"Casey", role:"Fulfillment & Reviews", bg:"#EAF3DE", color:"#27500A",
+    skills:[
+      {icon:"📧", name:"Fit Check Emails", desc:"Drafts day-3 fit check emails for every order — approval required before sending", status:"approval"},
+      {icon:"⭐", name:"Review Requests", desc:"Drafts review request emails at week 2 — approval required", status:"approval"},
+      {icon:"📦", name:"Order Logging", desc:"Logs every order, ship date, and delivery in the CRM sheet", status:"live"},
+      {icon:"📸", name:"Story Capture", desc:"Sends best customer stories to Morgan automatically for content", status:"live"},
+    ]},
+  { i:"MO", name:"Morgan", role:"Marketing Agent", bg:"#FFF4E0", color:"#7A4F00",
+    skills:[
+      {icon:"🎬", name:"Instagram & TikTok", desc:"Writes full reel scripts with captions — approval required before posting", status:"approval"},
+      {icon:"📧", name:"Email Campaigns", desc:"Writes full email campaigns — approval required before sending", status:"approval"},
+      {icon:"📢", name:"Google Ads", desc:"Writes ad copy variants — approval required before running", status:"approval"},
+      {icon:"📝", name:"SEO Blogs", desc:"Writes full SEO-optimized blog posts — approval required before publishing", status:"approval"},
+      {icon:"🎵", name:"Social Scheduling", desc:"Will auto-schedule approved content to all platforms", status:"monday"},
+    ]},
+];
+
+// ── INIT ──────────────────────────────────────────────────────────────
+function init() {
+  buildAgentList();
+  buildApprovalQueue();
+  buildSkills();
+  setInterval(updateClock, 1000);
+  updateClock();
+}
+
+function updateClock() {
+  const d=new Date(), h=((d.getHours()%12)||12), m=d.getMinutes().toString().padStart(2,'0'), ap=d.getHours()>=12?'PM':'AM';
+  const el=document.getElementById('homeClock');
+  if(el) el.textContent=`${h}:${m} ${ap}`;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`screen-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if(tab==='chat' && chatHistory.length===0) startBriefing();
+}
+
+// ── APPROVAL QUEUE ────────────────────────────────────────────────────
+function buildApprovalQueue() {
+  const pending = approvals.filter(a=>a.status==='pending');
+  const count = pending.length;
+
+  // Update badges
+  ['approvalBadge','approvalBadge2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=`${count} pending`;
+  });
+  const countEl=document.getElementById('approvalCount');
+  if(countEl) countEl.textContent=count;
+
+  // Home preview (first 2)
+  const homeQ=document.getElementById('approvalQueue');
+  if(homeQ) homeQ.innerHTML = pending.slice(0,2).map(a=>approvalCardHTML(a,true)).join('') +
+    (pending.length>2 ? `<div style="text-align:center;padding:8px;font-size:12px;color:var(--muted);cursor:pointer;" onclick="showTab('approvals')">+ ${pending.length-2} more waiting → tap Approve tab</div>` : '');
+
+  // Full list
+  const fullQ=document.getElementById('fullApprovalQueue');
+  if(fullQ) {
+    const approvedItems = approvals.filter(a=>a.status==='approved');
+    fullQ.innerHTML =
+      (pending.length===0 ? `<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">✓ All caught up — nothing pending</div>` : pending.map(a=>approvalCardHTML(a,false)).join('')) +
+      (approvedItems.length>0 ? `<div class="section-lbl" style="padding:14px 0 6px;">Recently Approved</div>` + approvedItems.map(a=>approvedCardHTML(a)).join('') : '');
+  }
+}
+
+function approvalCardHTML(a, compact) {
+  return `
+    <div class="approval-card pending" id="acard-${a.id}">
+      <div class="ac-header">
+        <div class="ai-av" style="background:${a.agentBg};color:${a.agentColor};width:28px;height:28px;font-size:9px;">${a.i||a.agent.slice(0,2).toUpperCase()}</div>
+        <div class="ac-agent">${a.agent}</div>
+        <div style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;background:var(--warning-bg);color:var(--warning);margin-left:4px;">${a.type}</div>
+        <div class="ac-type">→ ${a.destination.split(' ')[0]}...</div>
+      </div>
+      <div class="ac-content">
+        <div class="ac-title">${a.title}</div>
+        <div class="ac-preview">${compact ? a.preview.substring(0,120)+'...' : a.preview}</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:10px;">📤 Destination: ${a.destination}</div>
+        <div class="ac-actions">
+          <button class="btn-approve" onclick="approveItem(${a.id})">✓ Approve</button>
+          <button class="btn-edit" onclick="editItem(${a.id})">✏ Edit</button>
+          <button class="btn-reject" onclick="rejectItem(${a.id})">✗ Reject</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function approvedCardHTML(a) {
+  return `
+    <div class="approval-card approved-card">
+      <div class="ac-header" style="background:var(--success-bg);">
+        <div class="ac-agent" style="color:var(--success);">✓ ${a.agent}</div>
+        <div style="font-size:10px;color:var(--success);margin-left:4px;">${a.type}</div>
+        <div class="ac-approved-badge" style="margin-left:auto;">Approved</div>
+      </div>
+      <div class="ac-content">
+        <div class="ac-title" style="font-size:12px;">${a.title}</div>
+        <div style="font-size:11px;color:var(--success);margin-top:4px;">✓ Sent to ${a.destination}</div>
+      </div>
+    </div>`;
+}
+
+function approveItem(id) {
+  const item = approvals.find(a=>a.id===id);
+  if(item) { item.status='approved'; buildApprovalQueue(); }
+  addChatMsg('quinn', `✓ Approved — ${item.title} is going out now to ${item.destination}. I'll let you know when it's confirmed delivered.`);
+}
+
+function rejectItem(id) {
+  const item = approvals.find(a=>a.id===id);
+  if(item) { approvals = approvals.filter(a=>a.id!==id); buildApprovalQueue(); }
+  addChatMsg('quinn', `Got it — I've pulled "${item?.title}" and won't send it. Want me to revise it or drop it entirely?`);
+}
+
+function editItem(id) {
+  const item = approvals.find(a=>a.id===id);
+  document.getElementById('sheetContent').innerHTML = `
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px;">${item.title}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Edit before approving — ${item.agent} will send the updated version</div>
+    <textarea id="editArea" style="width:100%;height:160px;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.6;resize:none;outline:none;">${item.preview}</textarea>
+    <div style="font-size:10px;color:var(--muted);margin:8px 0 12px;">📤 Will send to: ${item.destination}</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="saveEdit(${id})" style="flex:1;padding:12px;background:var(--success);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">✓ Save + Approve</button>
+      <button onclick="closeSheet()" style="flex:1;padding:12px;background:var(--paper);color:var(--brown);border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+    </div>`;
+  openSheet();
+}
+
+function saveEdit(id) {
+  const item = approvals.find(a=>a.id===id);
+  const newText = document.getElementById('editArea').value;
+  if(item) { item.preview = newText; item.status = 'approved'; buildApprovalQueue(); }
+  closeSheet();
+  addChatMsg('quinn', `✓ Updated and approved — sending the edited version of "${item?.title}" now.`);
+}
+
+// ── AGENTS ────────────────────────────────────────────────────────────
+function buildAgentList() {
+  const list = document.getElementById('agentList');
+  list.innerHTML = AGENTS.map((a,i) => `
+    <div class="agent-item" onclick="showAgentDetail(${i})">
+      <div class="ai-av" style="background:${a.bg};color:${a.color}">${a.i}<div class="ai-dot active"></div></div>
+      <div class="ai-info">
+        <div class="ai-name" style="color:${a.color}">${a.name}</div>
+        <div class="ai-role">${a.role}</div>
+        <div class="ai-output">${a.output}</div>
+      </div>
+      <div style="font-size:16px;color:var(--border);">›</div>
+    </div>`).join('');
+}
+
+function showAgentDetail(i) {
+  const a = AGENTS[i];
+  const sk = SKILLS[i];
+  document.getElementById('sheetContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:${a.bg};color:${a.color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">${a.i}</div>
+      <div><div style="font-size:17px;font-weight:600;color:${a.color}">${a.name}</div><div style="font-size:11px;color:var(--muted)">${a.role}</div></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Live Skills</div>
+    ${sk.skills.map(s=>`
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:18px;flex-shrink:0;">${s.icon}</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--brown);">${s.name}</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">${s.desc}</div></div>
+        <div style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;flex-shrink:0;${s.status==='live'?'background:var(--green-light);color:var(--green);':s.status==='approval'?'background:var(--danger-bg);color:var(--danger);':'background:var(--gold-bg);color:var(--gold);'}">${s.status==='live'?'Live':s.status==='approval'?'Needs OK':'Monday'}</div>
+      </div>`).join('')}
+    <div style="margin-top:14px;padding:10px 12px;background:var(--danger-bg);border-radius:8px;border:1px solid #F5B7B1;">
+      <div style="font-size:11px;font-weight:700;color:var(--danger);margin-bottom:3px;">⚠ Approval required</div>
+      <div style="font-size:11px;color:#C0392B;line-height:1.5;">${a.name} cannot send anything without your explicit approval. Everything goes to your queue first.</div>
+    </div>`;
+  openSheet();
+}
+
+// ── SKILLS PAGE ───────────────────────────────────────────────────────
+function buildSkills() {
+  const list = document.getElementById('skillsList');
+  list.innerHTML = `
+    <div style="margin:0 16px 12px;padding:10px 14px;background:var(--danger-bg);border-radius:10px;border:1px solid #F5B7B1;">
+      <div style="font-size:13px;font-weight:700;color:var(--danger);margin-bottom:2px;">⚠ Nothing goes out without your OK</div>
+      <div style="font-size:11px;color:#C0392B;line-height:1.5;">Every email, post, alert, and calendar invite goes to your Approval queue first. You approve, edit, or reject. Then it sends.</div>
+    </div>` +
+    SKILLS.map(a=>`
+    <div class="skill-card">
+      <div class="sk-header">
+        <div class="sk-av" style="background:${a.bg};color:${a.color}">${a.i}</div>
+        <div><div class="sk-name" style="color:${a.color}">${a.name}</div><div class="sk-role">${a.role}</div></div>
+      </div>
+      <div class="sk-body">
+        ${a.skills.map(s=>`
+          <div class="sk-skill-row">
+            <div class="sk-icon">${s.icon}</div>
+            <div class="sk-info">
+              <div class="sk-skill-name">${s.name}</div>
+              <div class="sk-skill-desc">${s.desc}</div>
+            </div>
+            <div class="sk-status ${s.status==='live'?'status-live':s.status==='approval'?'status-approval':'status-monday'}">${s.status==='live'?'Live':s.status==='approval'?'Needs OK':'Monday'}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── CHAT ──────────────────────────────────────────────────────────────
+const QUINN_SYSTEM = `You are Quinn, CEO Agent for Ortho Dog — a dog brace and supplement company in Black Mountain, NC. You manage 7 agents: Reagan (leads + web search), Abby (outreach emails), Aly (operations + calendar), Sadie (CRM + pipeline), Fawn (partner relations), Casey (fulfillment + reviews), Morgan (all marketing content).
+
+CRITICAL RULE: Nothing goes out without Elsa or Adam's approval. Every email, social post, Slack message, and calendar invite goes to their approval queue first. When you mention something an agent has done — always say it's "in your approval queue" or "waiting for your OK". Never say something has been sent unless they approved it.
+
+You speak to Elsa and Adam, co-owners. Be warm, decisive, specific. Keep responses to 3-4 sentences for mobile. Reference real Ortho Dog context — CCL braces, hip braces, vet referral partnerships, NC/SC/GA territory.`;
+
+async function startBriefing() {
+  chatRunning=true;
+  document.getElementById('chatSend').disabled=true;
+  const tid=addTyping();
+  try {
+    const reply = await callAPI(`Give Elsa and Adam their morning briefing. Today is ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}. Cover leads, outreach, pipeline, fulfillment. Remind them they have ${approvals.filter(a=>a.status==='pending').length} items waiting in their approval queue. Keep it tight for mobile — 4-5 sentences max.`);
+    removeTyping(tid);
+    addChatMsg('quinn', reply);
+    chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    removeTyping(tid);
+    addChatMsg('quinn',`Good morning. Your team is ready. You have ${approvals.filter(a=>a.status==='pending').length} items in your approval queue — tap the Approve tab to review them before anything goes out.`);
+  }
+  chatRunning=false;
+  document.getElementById('chatSend').disabled=false;
+}
+
+async function sendChat() {
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text||chatRunning) return;
+  input.value=''; chatRunning=true;
+  document.getElementById('chatSend').disabled=true;
+  addChatMsg('you',text);
+  chatHistory.push({role:'user',content:text});
+  const tid=addTyping();
+  try {
+    const msgs=[...chatHistory.slice(-6)];
+    const reply=await callAPI(null,msgs);
+    removeTyping(tid);
+    addChatMsg('quinn',reply);
+    chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    removeTyping(tid);
+    addChatMsg('quinn','Let me look into that — can you give me a bit more detail?');
+  }
+  chatRunning=false;
+  document.getElementById('chatSend').disabled=false;
+}
+
+function addChatMsg(from, text) {
+  const area=document.getElementById('chatArea');
+  const div=document.createElement('div');
+  div.className='chat-msg'+(from==='you'?' you':'');
+  if(from==='quinn') {
+    div.innerHTML=`<div class="cm-av" style="background:var(--quinn);color:#fff;font-family:'Fraunces',serif;font-size:11px;">Q</div><div class="cm-body"><div class="cm-name">Quinn</div><div class="bubble quinn-bubble">${text}</div></div>`;
+  } else {
+    div.innerHTML=`<div class="cm-av" style="background:var(--brown);color:#fff;">E</div><div class="cm-body"><div class="cm-name" style="text-align:right">You</div><div class="bubble you-bubble">${text}</div></div>`;
+  }
+  area.appendChild(div);
+  area.scrollTop=area.scrollHeight;
+}
+
+function addTyping() {
+  const id='t'+Date.now();
+  const area=document.getElementById('chatArea');
+  const div=document.createElement('div');
+  div.className='chat-msg'; div.id=id;
+  div.innerHTML=`<div class="cm-av" style="background:var(--quinn);color:#fff;font-family:'Fraunces',serif;font-size:11px;">Q</div><div class="cm-body"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  area.appendChild(div); area.scrollTop=area.scrollHeight; return id;
+}
+function removeTyping(id){const el=document.getElementById(id);if(el)el.remove();}
+
+async function callAPI(userMsg, history) {
+  const msgs = history || [{role:'user',content:userMsg}];
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,system:QUINN_SYSTEM,messages:msgs})
+  });
+  const data=await res.json();
+  if(data.content?.[0]?.text) return data.content[0].text;
+  throw new Error('API error');
+}
+
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();sendChat();}
+});
+
+// ── SHEET ─────────────────────────────────────────────────────────────
+function openSheet(){document.getElementById('detailSheet').classList.add('open');document.getElementById('sheetOverlay').classList.add('show');}
+function closeSheet(){document.getElementById('detailSheet').classList.remove('open');document.getElementById('sheetOverlay').classList.remove('show');}
+
+init();
+</script>
+</body>
+</html>

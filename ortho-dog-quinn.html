@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ortho Dog — Quinn CEO Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brown:#3D2B1F;--brown2:#5C3D2A;--tan:#A07850;--tan2:#C9A878;
+  --cream:#FAF7F2;--paper:#F2EDE4;--border:#E4DDD2;
+  --white:#FFFFFF;--slate:#4A4540;--muted:#8A837C;
+  --gold:#D4A843;--gold-bg:#FFF8E8;
+  --quinn:#1A2E1A;--quinn2:#2D4A2D;--quinn-accent:#5C8A3C;--quinn-light:#EDF4E6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--brown);min-height:100vh;padding:0 0 48px;}
+
+/* TOP HERO — Quinn owns this */
+.quinn-hero {
+  background: var(--quinn);
+  padding: 28px 28px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.quinn-hero::before {
+  content:'';
+  position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:var(--quinn2);opacity:0.5;
+}
+.quinn-top { display:flex;align-items:flex-start;gap:16px;position:relative;z-index:1; }
+.quinn-av {
+  width:56px;height:56px;border-radius:50%;
+  background:var(--quinn-accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-size:20px;font-weight:400;
+  border:2.5px solid rgba(255,255,255,0.3);flex-shrink:0;
+  position:relative;
+}
+.quinn-live {
+  position:absolute;bottom:0;right:0;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--gold);border:2.5px solid var(--quinn);
+  animation:glow 1.5s infinite;
+}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:0.3}}
+.quinn-info { flex:1; }
+.quinn-name {
+  font-family:'Fraunces',serif;font-size:22px;
+  font-weight:400;color:#fff;letter-spacing:0.02em;
+  margin-bottom:2px;
+}
+.quinn-title { font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px; }
+.quinn-desc { font-size:13px;color:rgba(255,255,255,0.8);line-height:1.65;max-width:560px; }
+
+.quinn-stats {
+  display:flex;gap:8px;margin-top:18px;position:relative;z-index:1;flex-wrap:wrap;
+}
+.q-stat {
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  border-radius:8px;padding:10px 16px;text-align:center;
+}
+.q-stat-n { font-size:20px;font-weight:600;color:#fff; }
+.q-stat-l { font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px; }
+
+.quinn-focus {
+  margin-top:16px;padding:12px 16px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;position:relative;z-index:1;
+}
+.qf-label { font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:8px; }
+.qf-items { display:flex;gap:8px;flex-wrap:wrap; }
+.qf-item {
+  font-size:11px;font-weight:500;color:rgba(255,255,255,0.85);
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  padding:4px 12px;border-radius:20px;
+}
+
+/* YOU focus section */
+.you-section {
+  background:var(--gold-bg);border-bottom:1px solid var(--border);
+  padding:16px 28px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.you-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);flex-shrink:0; }
+.you-items { display:flex;gap:8px;flex-wrap:wrap; }
+.you-item {
+  font-size:12px;font-weight:500;color:var(--brown);
+  background:var(--white);border:1.5px solid var(--gold);
+  padding:5px 14px;border-radius:20px;
+}
+.you-note { font-size:11px;color:var(--muted);margin-left:auto; }
+
+/* BODY */
+.body-pad { padding:24px 28px; }
+
+/* Weekly review */
+.weekly-card {
+  background:var(--quinn-light);border:1.5px solid #C5DBA8;
+  border-radius:14px;padding:18px 20px;margin-bottom:28px;
+}
+.wc-header { display:flex;align-items:center;gap:10px;margin-bottom:14px; }
+.wc-icon {
+  width:36px;height:36px;border-radius:50%;background:var(--quinn-accent);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;
+}
+.wc-title { font-size:14px;font-weight:600;color:var(--quinn); }
+.wc-sub { font-size:11px;color:var(--muted); }
+.wc-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+@media(max-width:600px){.wc-grid{grid-template-columns:1fr 1fr;}}
+.wc-item { background:var(--white);border-radius:8px;padding:10px 12px;border:1px solid #C5DBA8; }
+.wc-item-label { font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--quinn-accent);margin-bottom:4px; }
+.wc-item-val { font-size:20px;font-weight:600;color:var(--quinn); }
+.wc-item-desc { font-size:10px;color:var(--muted);margin-top:2px; }
+.review-btn {
+  margin-top:14px;width:100%;padding:11px;
+  background:var(--quinn);color:#fff;border:none;
+  border-radius:8px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;cursor:not-allowed;
+  opacity:0.5;letter-spacing:0.04em;
+}
+
+.section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;margin-top:4px;}
+
+.coming-soon{background:var(--brown);color:var(--tan2);border-radius:10px;padding:10px 16px;text-align:center;margin-bottom:24px;font-size:12px;font-weight:500;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:8px;}
+.cs-dot{width:7px;height:7px;border-radius:50%;background:var(--tan2);animation:glow 1.5s infinite;}
+
+/* TEAM GRID */
+.grid-core{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+@media(max-width:700px){.grid-core{grid-template-columns:1fr 1fr;}}
+@media(max-width:440px){.grid-core{grid-template-columns:1fr;}}
+
+.card{background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;user-select:none;}
+.card:hover{box-shadow:0 2px 10px rgba(61,43,31,0.08);}
+.card.active{box-shadow:0 0 0 3px rgba(192,152,100,0.15);}
+.card-top{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.agent-name{font-size:13px;font-weight:600;margin-bottom:1px;}
+.badge{display:inline-block;font-size:8px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:0.05em;}
+.agent-desc{font-size:10px;color:var(--muted);line-height:1.55;margin-bottom:8px;}
+.output-box{border-radius:7px;padding:7px 9px;border:1px solid rgba(0,0,0,0.04);}
+.output-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+.output-text{font-size:10px;line-height:1.5;}
+.msg-box{margin-top:8px;border-radius:7px;border:1.5px dashed;padding:8px 10px;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.msg-to{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+.msg-text{font-size:10px;color:var(--slate);line-height:1.5;font-style:italic;}
+
+/* Morgan card */
+.morgan-row{margin-bottom:28px;}
+.morgan-card{background:var(--gold-bg);border:1.5px dashed var(--gold);border-radius:12px;padding:16px;cursor:pointer;transition:box-shadow 0.2s;position:relative;}
+.morgan-card.active{border-style:solid;box-shadow:0 0 0 3px rgba(212,168,67,0.18);}
+.new-tag{position:absolute;top:12px;right:12px;background:var(--gold);color:#fff;font-size:8px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:0.06em;text-transform:uppercase;}
+.morgan-inner{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:580px){.morgan-inner{grid-template-columns:1fr;}}
+.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.content-item{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:8px 10px;}
+.content-type{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin-bottom:2px;}
+.content-title{font-size:10px;font-weight:600;color:var(--brown);margin-bottom:1px;}
+.content-desc{font-size:9px;color:var(--muted);line-height:1.4;}
+.approve-btn{margin-top:10px;width:100%;padding:9px;background:var(--gold);color:#fff;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:not-allowed;opacity:0.55;letter-spacing:0.04em;}
+.av-lg{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;border:2px solid var(--gold);}
+
+/* PIPELINE */
+.pipeline{background:var(--paper);border-radius:12px;padding:18px;margin-bottom:18px;border:1px solid var(--border);}
+.pipe-main{display:flex;align-items:center;flex-wrap:wrap;}
+.pipe-node{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.pipe-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid transparent;transition:border-color 0.2s;}
+.pipe-name{font-size:9px;font-weight:600;text-align:center;}
+.pipe-role{font-size:8px;color:var(--muted);text-align:center;max-width:60px;line-height:1.3;}
+.pipe-arrow{font-size:14px;padding:0 5px;margin-bottom:18px;color:var(--border);transition:color 0.2s;}
+.pipe-arrow.act{color:var(--tan);}
+.pipe-branch{border-top:1px dashed var(--border);margin-top:12px;padding-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pipe-branch-label{font-size:9px;color:var(--muted);font-style:italic;}
+
+/* Quinn oversees bar */
+.quinn-oversees {
+  display:flex;align-items:center;gap:10px;
+  background:var(--quinn);border-radius:8px;
+  padding:10px 14px;margin-bottom:12px;
+}
+.qo-dot{width:7px;height:7px;border-radius:50%;background:var(--quinn-accent);}
+.qo-text{font-size:11px;color:rgba(255,255,255,0.75);}
+.qo-text strong{color:#fff;}
+
+/* ALERT */
+.alert-box{border-radius:10px;border:1.5px solid;padding:14px 18px;margin-top:4px;display:none;animation:fadeIn 0.2s ease;}
+.alert-box.show{display:block;}
+.alert-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.alert-msg{font-size:13px;line-height:1.65;font-style:italic;}
+</style>
+</head>
+<body>
+
+<!-- QUINN HERO -->
+<div class="quinn-hero">
+  <div class="quinn-top">
+    <div class="quinn-av">Q<div class="quinn-live"></div></div>
+    <div class="quinn-info">
+      <div class="quinn-name">Quinn</div>
+      <div class="quinn-title">CEO Agent · Fully Autonomous</div>
+      <div class="quinn-desc">Quinn runs the entire Ortho Dog operation Monday through Friday — leads, outreach, operations, pipeline, fulfillment, and marketing. You get one clean brief every Monday morning. That's your only required touchpoint.</div>
+    </div>
+  </div>
+  <div class="quinn-stats">
+    <div class="q-stat"><div class="q-stat-n">7</div><div class="q-stat-l">Agents Managed</div></div>
+    <div class="q-stat"><div class="q-stat-n">Mon</div><div class="q-stat-l">Your Review Day</div></div>
+    <div class="q-stat"><div class="q-stat-n">5</div><div class="q-stat-l">Your Focus Areas</div></div>
+    <div class="q-stat"><div class="q-stat-n">0</div><div class="q-stat-l">Daily Tasks for You</div></div>
+  </div>
+  <div class="quinn-focus">
+    <div class="qf-label">Quinn handles all of this — you never touch it</div>
+    <div class="qf-items">
+      <div class="qf-item">Lead research</div>
+      <div class="qf-item">Outreach emails</div>
+      <div class="qf-item">Sample kit ops</div>
+      <div class="qf-item">Pipeline tracking</div>
+      <div class="qf-item">Order fulfillment</div>
+      <div class="qf-item">Review collection</div>
+      <div class="qf-item">Social content</div>
+      <div class="qf-item">Email campaigns</div>
+      <div class="qf-item">Ad copy</div>
+      <div class="qf-item">SEO blogs</div>
+    </div>
+  </div>
+</div>
+
+<!-- YOU FOCUS -->
+<div class="you-section">
+  <div class="you-label">You focus on</div>
+  <div class="you-items">
+    <div class="you-item">Vet &amp; rehab partnerships</div>
+    <div class="you-item">Wholesale accounts</div>
+    <div class="you-item">New product lines</div>
+    <div class="you-item">Influencer &amp; brand deals</div>
+    <div class="you-item">Investor conversations</div>
+  </div>
+  <div class="you-note">Everything else → Quinn</div>
+</div>
+
+<div class="body-pad">
+
+  <!-- WEEKLY REVIEW -->
+  <div class="section-label">Your Monday Morning Review</div>
+  <div class="weekly-card">
+    <div class="wc-header">
+      <div class="wc-icon">Q</div>
+      <div>
+        <div class="wc-title">Quinn's Weekly Brief — Monday 8:00 AM</div>
+        <div class="wc-sub">One email. Everything you need. Nothing you don't.</div>
+      </div>
+    </div>
+    <div class="wc-grid">
+      <div class="wc-item">
+        <div class="wc-item-label">New leads</div>
+        <div class="wc-item-val">12</div>
+        <div class="wc-item-desc">Vet clinics &amp; influencers identified</div>
+      </div>
+      <div class="wc-item">
+        <div class="wc-item-label">Outreach sent</div>
+        <div class="wc-item-val">8</div>
+        <div class="wc-item-desc">3 warm replies this week</div>
+      </div>
+      <div class="wc-item">
+        <div class="wc-item-label">Pipeline moves</div>
+        <div class="wc-item-val">2</div>
+        <div class="wc-item-desc">Leads advanced to Stage 3</div>
+      </div>
+      <div class="wc-item">
+        <div class="wc-item-label">Orders shipped</div>
+        <div class="wc-item-val">24</div>
+        <div class="wc-item-desc">2-day priority, zero delays</div>
+      </div>
+      <div class="wc-item">
+        <div class="wc-item-label">New reviews</div>
+        <div class="wc-item-val">5★ ×4</div>
+        <div class="wc-item-desc">Collected &amp; published</div>
+      </div>
+      <div class="wc-item">
+        <div class="wc-item-label">Content queued</div>
+        <div class="wc-item-val">4</div>
+        <div class="wc-item-desc">Awaiting your approval</div>
+      </div>
+    </div>
+    <button class="review-btn" disabled>✓ Approve This Week's Plan (live Monday)</button>
+  </div>
+
+  <div class="coming-soon">
+    <div class="cs-dot"></div>
+    Preview Mode — Quinn goes fully live Monday when Spotify access is ready
+  </div>
+
+  <!-- QUINN OVERSEES -->
+  <div class="quinn-oversees">
+    <div class="qo-dot"></div>
+    <div class="qo-text"><strong>Quinn directs all 7 agents below.</strong> She sets priorities, reviews outputs, and escalates only what needs your eyes.</div>
+  </div>
+
+  <div class="section-label">Quinn's Team — tap any agent to see their report</div>
+  <div class="grid-core" id="coreGrid"></div>
+
+  <!-- Morgan -->
+  <div class="morgan-row">
+    <div class="morgan-card" id="morganCard" onclick="toggleMorgan()">
+      <div class="new-tag">Marketing</div>
+      <div class="card-top" style="margin-bottom:10px;">
+        <div class="av-lg" style="background:#FFF4E0;color:#7A4F00;">MO</div>
+        <div>
+          <div class="agent-name" style="color:#7A4F00;font-size:14px;">Morgan <span style="font-size:10px;color:var(--gold);font-weight:400;font-style:italic;">· Marketing Agent</span></div>
+          <span class="badge" style="background:#FFF4E0;color:#7A4F00;">Social · Email · Ads · SEO</span>
+        </div>
+      </div>
+      <div class="morgan-inner">
+        <div>
+          <p class="agent-desc" style="margin-bottom:10px;">Writes all content — social posts, email campaigns, Google ad copy, SEO blogs. Pulls from customer wins and vet partnerships. Quinn reviews first, then queues for your final approval.</p>
+          <div class="output-box" style="background:#FFF4E0;">
+            <div class="output-label" style="color:#7A4F00;">Quinn reviewed · Your approval needed</div>
+            <div class="output-text" style="color:#7A4F00;">4 pieces ready. Quinn has signed off. Waiting on you.</div>
+          </div>
+        </div>
+        <div>
+          <div class="output-label" style="color:#7A4F00;margin-bottom:6px;">This week's queue</div>
+          <div class="content-grid">
+            <div class="content-item"><div class="content-type">Instagram</div><div class="content-title">Baxter's Recovery</div><div class="content-desc">Reel + caption · customer photos</div></div>
+            <div class="content-item"><div class="content-type">Email</div><div class="content-title">Vet Referral Campaign</div><div class="content-desc">Subject line A/B tested</div></div>
+            <div class="content-item"><div class="content-type">Google Ads</div><div class="content-title">CCL Brace Set</div><div class="content-desc">3 variants · high intent</div></div>
+            <div class="content-item"><div class="content-type">SEO Blog</div><div class="content-title">Surgery vs Brace</div><div class="content-desc">1,200 words · CCL keywords</div></div>
+          </div>
+          <div class="msg-box" id="morganMsg" style="display:none;border-color:#D4A843;margin-top:8px;">
+            <div class="msg-to" style="color:#7A4F00;">→ Quinn reviewed, sending to You:</div>
+            <div class="msg-text">"All 4 pieces are ready and Quinn has approved them. Baxter's reel uses his 5-star review photos from Casey. The vet email is warm and professional. The CCL blog targets your top competitor keyword. Google ads are written to convert high-intent searches. Just say go."</div>
+          </div>
+          <button class="approve-btn" disabled>✓ Approve &amp; Publish (live Monday)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="section-label">Communication Pipeline</div>
+  <div class="pipeline">
+    <div style="font-size:9px;color:var(--quinn-accent);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+      <div style="width:16px;height:16px;border-radius:50%;background:var(--quinn);color:#fff;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;">Q</div>
+      Quinn orchestrates ↓
+    </div>
+    <div class="pipe-main" id="pipeMain"></div>
+    <div class="pipe-branch" id="pipeBranch"></div>
+  </div>
+
+  <div class="alert-box" id="alertBox">
+    <div class="alert-title" id="alertTitle"></div>
+    <div class="alert-msg" id="alertMsg"></div>
+  </div>
+
+</div>
+
+<script>
+const CORE = [
+  { initials:"RE", name:"Reagan", badge:"Lead Finder",
+    desc:"Researches vets, rehab clinics, pet influencers. Builds outreach list daily. Reports to Quinn.",
+    outputLabel:"This week", output:"12 vet clinics + 3 influencers identified. Quinn approved outreach list.",
+    bg:"#EEEDFE", color:"#3C3489", sendsTo:"Quinn → Abby",
+    msg:"Found Dr. Kim at Blue Ridge Animal Rehab — 20+ CCL cases/month. Also @GoldenPawsMama, 180K followers. Quinn reviewed and flagged both HOT. Sending to Abby." },
+  { initials:"AB", name:"Abby", badge:"Outreach Tracker",
+    desc:"Sends personalized emails to vets and influencers. Monitors replies. Reports warm leads to Quinn.",
+    outputLabel:"This week", output:"8 emails sent. Dr. Kim replied warm. Quinn directed Aly to prep sample kit.",
+    bg:"#FBEAF0", color:"#72243E", sendsTo:"Quinn → Aly",
+    msg:"Dr. Kim replied INTERESTED. Quinn reviewed and said go — Aly is prepping the sample kit now." },
+  { initials:"AL", name:"Aly", badge:"Operations Tracker",
+    desc:"Manages sample kits, inventory, and drop-offs to vet and rehab clinics. Reports to Quinn.",
+    outputLabel:"This week", output:"Sample kit shipped Thursday. Quinn updated pipeline stage after confirmation.",
+    bg:"#FAECE7", color:"#712B13", sendsTo:"Quinn → Sadie",
+    msg:"Drop-off complete at Blue Ridge Rehab. Quinn moved Dr. Kim to Stage 3 and told Sadie to update the board." },
+  { initials:"SA", name:"Sadie", badge:"Pipeline Manager",
+    desc:"Tracks all leads from first contact to signed partner. Quinn reviews stage moves weekly.",
+    outputLabel:"This week", output:"2 leads to Stage 3. Wholesale inquiry received. Quinn flagged for your review Monday.",
+    bg:"#E6F1FB", color:"#0C447C", sendsTo:"Quinn → Fawn",
+    msg:"Pipeline updated. Quinn flagged the Paws & Claws wholesale inquiry as high priority — Fawn is on it. You'll see it in Monday's brief." },
+  { initials:"FA", name:"Fawn", badge:"Partner Relations",
+    desc:"Manages vet partnerships, influencer deals, wholesale accounts. Quinn escalates key wins to you.",
+    outputLabel:"This week", output:"Dr. Kim signed. Paws & Claws signed wholesale. Quinn is briefing you Monday.",
+    bg:"#FAEEDA", color:"#633806", sendsTo:"Quinn → Casey",
+    msg:"Dr. Kim and Paws & Claws both signed. Quinn will include this in your Monday brief as a highlight. Casey is fulfilling now." },
+  { initials:"CA", name:"Casey", badge:"Fulfillment & Reviews",
+    desc:"Ships all orders, handles fit checks, collects reviews. Sends customer wins to Quinn for content.",
+    outputLabel:"This week", output:"24 orders shipped. 4 new 5-star reviews. Quinn sent Baxter's story to Morgan.",
+    bg:"#EAF3DE", color:"#27500A", sendsTo:"Quinn → Morgan",
+    msg:"Baxter the Lab story + photos sent to Quinn. She reviewed and passed to Morgan for a reel and email feature. All orders fulfilled on time." },
+];
+
+let active = null;
+let morganOpen = false;
+
+function buildCore() {
+  const grid = document.getElementById('coreGrid');
+  CORE.forEach((a, i) => {
+    const card = document.createElement('div');
+    card.className = 'card'; card.id = `card-${i}`;
+    card.onclick = () => toggle(i);
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="av" style="background:${a.bg};color:${a.color}">${a.initials}</div>
+        <div>
+          <div class="agent-name" style="color:${a.color}">${a.name}</div>
+          <span class="badge" style="background:${a.bg};color:${a.color}">${a.badge}</span>
+        </div>
+      </div>
+      <p class="agent-desc">${a.desc}</p>
+      <div class="output-box" style="background:${a.bg}">
+        <div class="output-label" style="color:${a.color}">${a.outputLabel}</div>
+        <div class="output-text" style="color:${a.color}">${a.output}</div>
+      </div>
+      <div class="msg-box" id="msg-${i}" style="display:none;border-color:${a.color}">
+        <div class="msg-to" style="color:${a.color}">→ ${a.sendsTo}:</div>
+        <div class="msg-text">"${a.msg}"</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function buildPipeline() {
+  const main = document.getElementById('pipeMain');
+  CORE.forEach((a, i) => {
+    const wrap = document.createElement('div'); wrap.style.cssText='display:flex;align-items:center;';
+    wrap.innerHTML=`
+      <div class="pipe-node" onclick="toggle(${i})">
+        <div class="pipe-av" id="pav-${i}" style="background:${a.bg};color:${a.color}">${a.initials}</div>
+        <div class="pipe-name" style="color:${a.color}">${a.name}</div>
+        <div class="pipe-role">${a.badge}</div>
+      </div>
+      ${i<CORE.length-1?`<div class="pipe-arrow" id="parr-${i}">→</div>`:''}`;
+    main.appendChild(wrap);
+  });
+
+  document.getElementById('pipeBranch').innerHTML=`
+    <div class="pipe-branch-label">Casey → Quinn → Morgan</div>
+    <div class="pipe-node" onclick="toggleMorgan()">
+      <div class="pipe-av" id="pav-morgan" style="background:#FFF4E0;color:#7A4F00;border:2px dashed var(--gold);">MO</div>
+      <div class="pipe-name" style="color:#7A4F00;">Morgan</div>
+      <div class="pipe-role">Marketing</div>
+    </div>
+    <div class="pipe-branch-label">→ Quinn reviews → <strong style="color:var(--brown)">You approve</strong></div>`;
+}
+
+function toggle(i) {
+  active = active===i ? null : i;
+  morganOpen = false;
+  document.getElementById('morganMsg').style.display='none';
+  document.getElementById('morganCard').className='morgan-card';
+  renderAll();
+}
+
+function toggleMorgan() {
+  morganOpen=!morganOpen;
+  active=null;
+  document.getElementById('morganMsg').style.display=morganOpen?'block':'none';
+  document.getElementById('morganCard').className='morgan-card'+(morganOpen?' active':'');
+  renderAll();
+  if(morganOpen){
+    const box=document.getElementById('alertBox');
+    box.className='alert-box show';
+    box.style.borderColor='#D4A843';box.style.background='#FFF8E8';
+    document.getElementById('alertTitle').style.color='#7A4F00';
+    document.getElementById('alertTitle').textContent='Morgan → Quinn reviewed → You';
+    document.getElementById('alertMsg').style.color='#7A4F00';
+    document.getElementById('alertMsg').textContent='"4 content pieces ready. Quinn has reviewed and approved all of them. Baxter\'s reel, the vet email, Google ad set, and the CCL blog are all queued. Just say go on Monday."';
+  } else {
+    document.getElementById('alertBox').className='alert-box';
+  }
+}
+
+function renderAll() {
+  CORE.forEach((a,i)=>{
+    const isActive=active===i;
+    const card=document.getElementById(`card-${i}`);
+    card.className='card'+(isActive?' active':'');
+    card.style.borderColor=isActive?a.color:'';
+    document.getElementById(`msg-${i}`).style.display=isActive?'block':'none';
+    const pav=document.getElementById(`pav-${i}`);
+    if(pav) pav.style.border=isActive?`2px solid ${a.color}`:'2px solid transparent';
+    if(i<CORE.length-1){
+      const arr=document.getElementById(`parr-${i}`);
+      if(arr) arr.className='pipe-arrow'+(isActive?' act':'');
+    }
+  });
+  document.getElementById('pav-morgan').style.border=morganOpen?'2px solid #D4A843':'2px dashed var(--gold)';
+  if(active!==null&&!morganOpen){
+    const a=CORE[active];
+    const box=document.getElementById('alertBox');
+    box.className='alert-box show';
+    box.style.borderColor=a.color;box.style.background=a.bg;
+    document.getElementById('alertTitle').style.color=a.color;
+    document.getElementById('alertTitle').textContent=`${a.name} → ${a.sendsTo}`;
+    document.getElementById('alertMsg').style.color=a.color;
+    document.getElementById('alertMsg').textContent=`"${a.msg}"`;
+  } else if(active===null&&!morganOpen){
+    document.getElementById('alertBox').className='alert-box';
+  }
+}
+
+buildCore(); buildPipeline();
+</script>
+</body>
+</html>

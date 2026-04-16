@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ortho Dog">
+<meta name="theme-color" content="#3D2B1F">
+<title>Ortho Dog — Command Center</title>
+<link rel="manifest" href="#" id="manifestLink">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brown:#3D2B1F;--brown2:#5C3D2A;--tan:#A07850;--tan2:#C9A878;
+  --cream:#FAF7F2;--paper:#F2EDE4;--border:#E4DDD2;
+  --white:#FFFFFF;--slate:#4A4540;--muted:#8A837C;
+  --gold:#D4A843;--gold-bg:#FFF8E8;
+  --quinn:#1A2E1A;--green:#5C8A3C;--green-light:#EDF4E6;
+  --danger:#C0392B;--success:#27AE60;--info:#2980B9;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--brown);min-height:100vh;padding-bottom:80px;}
+
+/* MOBILE NAV */
+.mobile-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--brown);
+  display:flex;align-items:center;
+  padding:0 0 env(safe-area-inset-bottom);
+  z-index:100;
+  border-top:1px solid var(--brown2);
+}
+.nav-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:10px 4px;cursor:pointer;
+  font-size:9px;font-weight:600;color:rgba(255,255,255,0.45);
+  text-transform:uppercase;letter-spacing:0.06em;gap:4px;
+  transition:color 0.15s;
+}
+.nav-tab.active{color:var(--tan2);}
+.nav-icon{font-size:20px;line-height:1;}
+
+/* SCREENS */
+.screen{display:none;padding:0;}
+.screen.active{display:block;}
+
+/* TOP BAR */
+.topbar{
+  background:var(--brown);padding:16px 20px 14px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-logo{font-family:'Fraunces',serif;font-size:18px;color:var(--cream);font-weight:300;}
+.topbar-logo em{color:var(--tan2);font-style:italic;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.topbar-badge{font-size:10px;font-weight:600;color:var(--tan2);background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:20px;letter-spacing:0.04em;}
+.clock-small{font-size:12px;color:rgba(255,255,255,0.5);font-variant-numeric:tabular-nums;}
+
+/* CARDS */
+.card{background:var(--white);border-radius:14px;border:1px solid var(--border);margin:12px 16px;padding:16px;}
+.card-dark{background:var(--quinn);border-color:transparent;}
+.section-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;padding:16px 16px 6px;}
+
+/* QUINN HEADER */
+.quinn-header{background:var(--quinn);padding:20px 16px 16px;}
+.qh-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.qh-av{width:46px;height:46px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:17px;border:2px solid rgba(255,255,255,0.2);position:relative;flex-shrink:0;}
+.qh-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid var(--quinn);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.qh-name{font-family:'Fraunces',serif;font-size:20px;color:#fff;font-weight:300;}
+.qh-title{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;}
+.qh-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.qh-stat{background:rgba(255,255,255,0.08);border-radius:8px;padding:10px 8px;text-align:center;}
+.qh-stat-n{font-size:20px;font-weight:600;color:#fff;}
+.qh-stat-l{font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+
+/* AGENT LIST */
+.agent-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--white);transition:background 0.15s;}
+.agent-item:last-child{border-bottom:none;}
+.agent-item:active{background:var(--paper);}
+.ai-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;position:relative;}
+.ai-dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--border);border:2px solid #fff;}
+.ai-dot.on{background:var(--green);animation:pulse 1.5s infinite;}
+.ai-dot.done{background:var(--green);}
+.ai-info{flex:1;min-width:0;}
+.ai-name{font-size:14px;font-weight:600;}
+.ai-role{font-size:11px;color:var(--muted);}
+.ai-output{font-size:11px;color:var(--slate);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ai-arrow{font-size:16px;color:var(--border);}
+
+/* DETAIL SHEET */
+.detail-sheet{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);border-radius:20px 20px 0 0;
+  padding:20px 20px calc(80px + env(safe-area-inset-bottom));
+  max-height:80vh;overflow-y:auto;
+  z-index:200;
+  transform:translateY(100%);
+  transition:transform 0.3s ease;
+  box-shadow:0 -4px 40px rgba(0,0,0,0.15);
+}
+.detail-sheet.open{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 16px;}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:199;display:none;}
+.sheet-overlay.show{display:block;}
+
+/* TARGET FUNCTION */
+.target-score{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.score-bar{flex:1;height:8px;background:var(--paper);border-radius:4px;overflow:hidden;}
+.score-fill{height:100%;border-radius:4px;transition:width 0.5s ease;}
+.score-num{font-size:13px;font-weight:600;min-width:32px;text-align:right;}
+.target-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+.target-card.hot{border-color:var(--gold);background:var(--gold-bg);}
+.target-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.hot-badge{font-size:8px;font-weight:700;background:var(--gold);color:#fff;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:0.06em;}
+.score-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.score-item{background:var(--paper);border-radius:6px;padding:6px 8px;}
+.si-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.si-val{font-size:13px;font-weight:600;color:var(--brown);}
+
+/* CRM TABLE */
+.crm-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--white);}
+.crm-row:active{background:var(--paper);}
+.crm-stage{font-size:9px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
+.stage-1{background:#EEF2FF;color:#4338CA;}
+.stage-2{background:#FEF3C7;color:#92400E;}
+.stage-3{background:#D1FAE5;color:#065F46;}
+.stage-4{background:#2D4A2D;color:#A7F3D0;}
+.crm-info{flex:1;min-width:0;}
+.crm-name{font-size:13px;font-weight:600;}
+.crm-detail{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* PIPELINE TABS */
+.pipeline-tabs{display:flex;gap:0;padding:0 16px;margin-bottom:2px;}
+.p-tab{flex:1;text-align:center;padding:10px 4px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;transition:all 0.15s;}
+.p-tab.active{color:var(--brown);border-bottom-color:var(--gold);}
+
+/* INTEGRATIONS */
+.integration-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--white);}
+.int-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.int-info{flex:1;}
+.int-name{font-size:14px;font-weight:600;}
+.int-status{font-size:11px;margin-top:2px;}
+.int-status.connected{color:var(--success);}
+.int-status.pending{color:var(--gold);}
+.int-status.setup{color:var(--info);}
+.int-btn{font-size:11px;font-weight:600;padding:6px 14px;border-radius:6px;border:none;cursor:pointer;white-space:nowrap;}
+.btn-connected{background:var(--green-light);color:var(--green);}
+.btn-setup{background:var(--brown);color:#fff;}
+.btn-pending{background:var(--gold-bg);color:var(--gold);}
+
+/* CHAT */
+.chat-area{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:300px;}
+.chat-msg{display:flex;gap:10px;animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chat-msg.you{flex-direction:row-reverse;}
+.cm-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.cm-body{max-width:75%;}
+.cm-name{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.chat-msg.you .cm-name{text-align:right;}
+.cm-bubble{padding:10px 13px;border-radius:4px 14px 14px 14px;font-size:13px;line-height:1.6;color:var(--slate);background:var(--white);border:1px solid var(--border);}
+.chat-msg.you .cm-bubble{background:var(--brown);color:#fff;border-color:var(--brown);border-radius:14px 4px 14px 14px;}
+.quinn-bubble{background:var(--quinn);color:var(--cream);border-color:transparent!important;border-radius:4px 14px 14px 14px!important;}
+.typing{display:inline-flex;gap:4px;align-items:center;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:4px 14px 14px 14px;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{transform:scale(0.55);opacity:0.3}40%{transform:scale(1);opacity:1}}
+
+/* INPUT */
+.chat-input-bar{position:sticky;bottom:80px;background:var(--white);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:8px;align-items:center;}
+.chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--paper);outline:none;color:var(--brown);}
+.chat-input:focus{border-color:var(--tan);}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--brown);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-send:disabled{opacity:0.4;}
+
+/* BUTTONS */
+.big-btn{width:100%;padding:14px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.03em;transition:opacity 0.15s;}
+.btn-brown{background:var(--brown);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-outline{background:transparent;color:var(--brown);border:1.5px solid var(--border);}
+
+/* SLACK SETUP */
+.setup-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.setup-step:last-child{border-bottom:none;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--brown);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.step-info{}
+.step-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* SCRIPT BOX */
+.script-box{background:#1e1e1e;border-radius:10px;padding:14px 16px;font-family:monospace;font-size:11px;color:#d4d4d4;line-height:1.8;white-space:pre-wrap;overflow-x:auto;margin:8px 0;}
+
+.divider{height:1px;background:var(--border);margin:0 16px;}
+</style>
+</head>
+<body>
+
+<!-- SCREEN: HOME -->
+<div class="screen active" id="screen-home">
+  <div class="quinn-header">
+    <div class="qh-top">
+      <div class="qh-av">Q<div class="qh-dot"></div></div>
+      <div>
+        <div class="qh-name">Quinn</div>
+        <div class="qh-title">CEO Agent · Ortho Dog</div>
+      </div>
+      <div class="topbar-right" style="margin-left:auto;">
+        <div class="clock-small" id="homeClock"></div>
+      </div>
+    </div>
+    <div class="qh-stats">
+      <div class="qh-stat"><div class="qh-stat-n">12</div><div class="qh-stat-l">Leads</div></div>
+      <div class="qh-stat"><div class="qh-stat-n">8</div><div class="qh-stat-l">Outreach</div></div>
+      <div class="qh-stat"><div class="qh-stat-n">24</div><div class="qh-stat-l">Orders</div></div>
+      <div class="qh-stat"><div class="qh-stat-n">4★</div><div class="qh-stat-l">Reviews</div></div>
+    </div>
+  </div>
+
+  <div class="section-lbl">Your Team</div>
+  <div style="background:var(--white);border-radius:14px;margin:0 16px;overflow:hidden;border:1px solid var(--border);">
+    <div id="agentList"></div>
+  </div>
+
+  <div style="padding:16px;">
+    <button class="big-btn btn-green" onclick="showTab('chat')">▶ Run Morning Briefing</button>
+  </div>
+</div>
+
+<!-- SCREEN: PIPELINE / CRM -->
+<div class="screen" id="screen-pipeline">
+  <div class="topbar">
+    <div class="topbar-logo">Ortho <em>Dog</em> <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-weight:400;font-style:normal;">· Pipeline</span></div>
+    <div class="topbar-right"><div class="topbar-badge">Live CRM</div></div>
+  </div>
+
+  <div style="padding:16px 16px 8px;">
+    <button class="big-btn btn-brown" onclick="runTargetFunction()" id="targetBtn">🎯 Run Target Function</button>
+  </div>
+
+  <div class="pipeline-tabs">
+    <div class="p-tab active" onclick="showPipelineTab('all',this)">All</div>
+    <div class="p-tab" onclick="showPipelineTab('1',this)">Stage 1</div>
+    <div class="p-tab" onclick="showPipelineTab('2',this)">Stage 2</div>
+    <div class="p-tab" onclick="showPipelineTab('3',this)">Stage 3</div>
+    <div class="p-tab" onclick="showPipelineTab('hot',this)">🔥 HOT</div>
+  </div>
+
+  <div id="pipelineList" style="background:var(--white);margin:0 16px;border-radius:12px;border:1px solid var(--border);overflow:hidden;"></div>
+
+  <div class="section-lbl" style="margin-top:12px;">Target Scores</div>
+  <div id="targetList" style="padding:0 16px;"></div>
+</div>
+
+<!-- SCREEN: CHAT -->
+<div class="screen" id="screen-chat">
+  <div class="topbar">
+    <div class="qh-av" style="width:36px;height:36px;font-size:13px;">Q</div>
+    <div style="margin-left:4px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;font-family:'Fraunces',serif;">Quinn</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.5);">CEO Agent</div>
+    </div>
+    <div class="topbar-right"><div class="qh-dot" style="position:static;width:10px;height:10px;border:none;"></div></div>
+  </div>
+  <div class="chat-area" id="chatArea">
+    <div class="chat-msg">
+      <div class="cm-av" style="background:var(--quinn);color:#fff;font-family:'Fraunces',serif;font-size:13px;">Q</div>
+      <div class="cm-body">
+        <div class="cm-name">Quinn · CEO Agent</div>
+        <div class="cm-bubble quinn-bubble">Good morning. I'm running the full briefing — give me a moment to collect from the team.</div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="chatInput" placeholder="Ask Quinn anything…" />
+    <button class="chat-send" id="chatSend" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<!-- SCREEN: INTEGRATIONS -->
+<div class="screen" id="screen-integrations">
+  <div class="topbar">
+    <div class="topbar-logo">Ortho <em>Dog</em> <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-weight:400;font-style:normal;">· Integrations</span></div>
+  </div>
+
+  <div class="section-lbl">Connected</div>
+  <div style="background:var(--white);margin:0 16px;border-radius:12px;border:1px solid var(--border);overflow:hidden;">
+    <div class="integration-item">
+      <div class="int-icon" style="background:#EA4335;">📧</div>
+      <div class="int-info"><div class="int-name">Gmail</div><div class="int-status connected">✓ Connected · elsaboyette@gmail.com + adam CC</div></div>
+      <button class="int-btn btn-connected">Active</button>
+    </div>
+    <div class="divider"></div>
+    <div class="integration-item">
+      <div class="int-icon" style="background:#34A853;">📅</div>
+      <div class="int-info"><div class="int-name">Google Calendar</div><div class="int-status connected">✓ Connected · Weekly review set Mon 8am</div></div>
+      <button class="int-btn btn-connected">Active</button>
+    </div>
+    <div class="divider"></div>
+    <div class="integration-item">
+      <div class="int-icon" style="background:#0F9D58;">📊</div>
+      <div class="int-info"><div class="int-name">Google Drive</div><div class="int-status connected">✓ Connected</div></div>
+      <button class="int-btn btn-connected">Active</button>
+    </div>
+  </div>
+
+  <div class="section-lbl" style="margin-top:12px;">Setup Required</div>
+  <div style="background:var(--white);margin:0 16px;border-radius:12px;border:1px solid var(--border);overflow:hidden;">
+    <div class="integration-item">
+      <div class="int-icon" style="background:#4A154B;">💬</div>
+      <div class="int-info"><div class="int-name">Slack</div><div class="int-status setup">Setup needed · create workspace first</div></div>
+      <button class="int-btn btn-setup" onclick="showSlackSetup()">Setup →</button>
+    </div>
+    <div class="divider"></div>
+    <div class="integration-item">
+      <div class="int-icon" style="background:#95BF47;">🛒</div>
+      <div class="int-info"><div class="int-name">Shopify</div><div class="int-status pending">Monday · connect after Spotify</div></div>
+      <button class="int-btn btn-pending">Pending</button>
+    </div>
+    <div class="divider"></div>
+    <div class="integration-item">
+      <div class="int-icon" style="background:#1DB954;">🎵</div>
+      <div class="int-info"><div class="int-name">Spotify / Social</div><div class="int-status pending">Monday · access pending</div></div>
+      <button class="int-btn btn-pending">Monday</button>
+    </div>
+  </div>
+
+  <div class="section-lbl" style="margin-top:12px;">Google Sheets CRM Setup</div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:600;color:var(--brown);margin-bottom:6px;">Create your live CRM in Google Sheets</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Paste this script into Google Apps Script to auto-create your full Ortho Dog pipeline CRM with all columns, color coding, and sample data.</div>
+    <div class="script-box">function createOrthoDogCRM() {
+  var ss = SpreadsheetApp.create('Ortho Dog — Live CRM');
+  
+  // Pipeline sheet
+  var ps = ss.getActiveSheet();
+  ps.setName('Pipeline');
+  ps.getRange('A1:J1').setValues([[
+    'Lead Name','Company','Type','Stage',
+    'Target Score','Last Contact','Next Action',
+    'Notes','Reagan Flagged','Status'
+  ]]);
+  ps.getRange('A1:J1').setFontWeight('bold')
+    .setBackground('#3D2B1F').setFontColor('#FFFFFF');
+  ps.setColumnWidth(1,180); ps.setColumnWidth(2,160);
+  ps.setColumnWidth(7,200); ps.setColumnWidth(8,200);
+  
+  // Reviews sheet
+  var rs = ss.insertSheet('Reviews');
+  rs.getRange('A1:F1').setValues([[
+    'Customer','Product','Stars','Review Text',
+    'Date','Morgan Used'
+  ]]);
+  rs.getRange('A1:F1').setFontWeight('bold')
+    .setBackground('#27500A').setFontColor('#FFFFFF');
+  
+  // Orders sheet
+  var os = ss.insertSheet('Orders');
+  os.getRange('A1:G1').setValues([[
+    'Order ID','Customer','Product','Status',
+    'Ship Date','Fit Check Sent','Review Collected'
+  ]]);
+  os.getRange('A1:G1').setFontWeight('bold')
+    .setBackground('#0C447C').setFontColor('#FFFFFF');
+  
+  var url = ss.getUrl();
+  Logger.log('CRM created: ' + url);
+  SpreadsheetApp.getUi().alert('CRM created! URL: ' + url);
+}</div>
+    <button class="big-btn btn-brown" style="margin-top:8px;" onclick="copyScript()">Copy Script</button>
+  </div>
+</div>
+
+<!-- DETAIL SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+<div class="detail-sheet" id="detailSheet">
+  <div class="sheet-handle"></div>
+  <div id="sheetContent"></div>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="nav-tab active" id="tab-home" onclick="showTab('home')">
+    <div class="nav-icon">🏠</div>Home
+  </div>
+  <div class="nav-tab" id="tab-pipeline" onclick="showTab('pipeline')">
+    <div class="nav-icon">📊</div>Pipeline
+  </div>
+  <div class="nav-tab" id="tab-chat" onclick="showTab('chat')">
+    <div class="nav-icon">💬</div>Quinn
+  </div>
+  <div class="nav-tab" id="tab-integrations" onclick="showTab('integrations')">
+    <div class="nav-icon">⚡</div>Connect
+  </div>
+</div>
+
+<script>
+// ── AGENTS ──────────────────────────────────────────────────────────
+const AGENTS = [
+  { i:"RE", name:"Reagan", role:"Lead Finder", bg:"#EEEDFE", color:"#3C3489",
+    output:"12 vet clinics identified · 2 HOT flagged",
+    detail:"Reagan researches luxury vet clinics and pet rehab specialists in NC, SC, and GA. She scores each one using the Target Function and hands the HOT leads to Abby.",
+    tasks:["Daily clinic research","Influencer identification","Target scoring","HOT lead flagging"] },
+  { i:"AB", name:"Abby", role:"Outreach Tracker", bg:"#FBEAF0", color:"#72243E",
+    output:"8 emails sent · Dr. Kim replied warm",
+    detail:"Abby sends personalized outreach to every lead Reagan flags. She monitors replies, flags warm leads, and tells Aly when to prep a sample kit.",
+    tasks:["Personalized email outreach","Reply monitoring","Warm lead flagging","Follow-up scheduling"] },
+  { i:"AL", name:"Aly", role:"Operations", bg:"#FAECE7", color:"#712B13",
+    output:"Sample kit ready · Drop-off Thu 10am",
+    detail:"Aly manages sample kits, brace inventory, and drop-offs to vet clinics. She creates Google Calendar events automatically so you never miss a visit.",
+    tasks:["Sample kit prep","Drop-off scheduling","Inventory tracking","Calendar event creation"] },
+  { i:"SA", name:"Sadie", role:"Pipeline Manager", bg:"#E6F1FB", color:"#0C447C",
+    output:"Dr. Kim → Stage 3 · 6 active leads",
+    detail:"Sadie tracks every lead from first contact to signed partner. She updates the Google Sheet CRM in real time and flags anything stalled.",
+    tasks:["Pipeline stage updates","CRM sheet updates","Stalled lead flags","Weekly pipeline report"] },
+  { i:"FA", name:"Fawn", role:"Partner Relations", bg:"#FAEEDA", color:"#633806",
+    output:"Paws & Claws wholesale inquiry · warm",
+    detail:"Fawn manages relationships once a lead converts. She tracks referrals, renewals, and makes sure every partner feels taken care of.",
+    tasks:["Partner relationship mgmt","Referral tracking","Renewal management","Wholesale account care"] },
+  { i:"CA", name:"Casey", role:"Fulfillment & Reviews", bg:"#EAF3DE", color:"#27500A",
+    output:"24 shipped · 4 new 5★ reviews · 0 delays",
+    detail:"Casey handles every order end to end — ships, fit checks at day 3, collects reviews, and sends the best customer stories to Morgan.",
+    tasks:["Order fulfillment","Fit check follow-ups","5-star review collection","Customer story capture"] },
+  { i:"MO", name:"Morgan", role:"Marketing Agent", bg:"#FFF4E0", color:"#7A4F00",
+    output:"4 content pieces queued · awaiting approval",
+    detail:"Morgan writes everything — Instagram reels, email campaigns, Google ads, SEO blogs. Quinn reviews first, then you approve. Nothing publishes without your sign-off.",
+    tasks:["Instagram & TikTok content","Email campaigns","Google ad copy","SEO blog writing"] },
+];
+
+// ── TARGET FUNCTION DATA ─────────────────────────────────────────────
+const TARGETS = [
+  { name:"Dr. Kim — Blue Ridge Animal Rehab", type:"Vet Clinic", area:"Asheville NC", stage:3, hot:true,
+    score:94, scores:{ccl:95, area:90, volume:98, warm:95, size:92} },
+  { name:"Paws & Play Rehab", type:"Pet Rehab", area:"Charlotte NC", stage:2, hot:true,
+    score:88, scores:{ccl:85, area:88, volume:82, warm:92, size:90} },
+  { name:"Mountain Paws Vet", type:"Vet Clinic", area:"Asheville NC", stage:1, hot:false,
+    score:76, scores:{ccl:80, area:90, volume:70, warm:60, size:78} },
+  { name:"@GoldenPawsMama", type:"Influencer", area:"National", stage:2, hot:true,
+    score:85, scores:{ccl:70, area:50, volume:95, warm:88, size:100} },
+  { name:"Hound & Health", type:"Pet Boutique", area:"Brevard NC", stage:1, hot:false,
+    score:71, scores:{ccl:65, area:72, volume:68, warm:75, size:74} },
+  { name:"Carolina K9 Rehab", type:"Pet Rehab", area:"Raleigh NC", stage:1, hot:false,
+    score:68, scores:{ccl:72, area:65, volume:65, warm:62, size:74} },
+];
+
+// ── PIPELINE DATA ────────────────────────────────────────────────────
+const PIPELINE = [
+  { name:"Dr. Kim", company:"Blue Ridge Animal Rehab", type:"Vet", stage:3, hot:true, last:"Today", next:"Send wholesale pricing sheet" },
+  { name:"Paws & Claws", company:"Asheville Pet Boutique", type:"Wholesale", stage:3, hot:true, last:"Yesterday", next:"Follow up on brace order" },
+  { name:"@GoldenPawsMama", company:"180K followers", type:"Influencer", stage:2, hot:true, last:"2 days ago", next:"Send product sample" },
+  { name:"Mountain Paws", company:"Vet Clinic — Asheville", type:"Vet", stage:1, hot:false, last:"3 days ago", next:"Initial outreach" },
+  { name:"Hound & Health", company:"Pet Boutique — Brevard", type:"Wholesale", stage:1, hot:false, last:"1 week ago", next:"Follow up email" },
+  { name:"Carolina K9", company:"Pet Rehab — Raleigh", type:"Vet", stage:1, hot:false, last:"1 week ago", next:"Send intro email" },
+];
+
+let chatRunning = false;
+let chatHistory = [];
+let currentPipelineFilter = 'all';
+
+// ── INIT ─────────────────────────────────────────────────────────────
+function init() {
+  buildAgentList();
+  buildPipeline();
+  buildTargets();
+  setInterval(updateClock, 1000);
+  updateClock();
+  // Auto-run briefing on chat tab
+}
+
+function updateClock() {
+  const d=new Date(), h=((d.getHours()%12)||12), m=d.getMinutes().toString().padStart(2,'0'), ap=d.getHours()>=12?'PM':'AM';
+  document.getElementById('homeClock').textContent=`${h}:${m} ${ap}`;
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`screen-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if (tab==='chat' && chatHistory.length===0) startBriefing();
+}
+
+// ── AGENTS ───────────────────────────────────────────────────────────
+function buildAgentList() {
+  const list = document.getElementById('agentList');
+  list.innerHTML = AGENTS.map((a,i) => `
+    <div class="agent-item" onclick="showAgentDetail(${i})">
+      <div class="ai-av" style="background:${a.bg};color:${a.color}">
+        ${a.i}<div class="ai-dot done"></div>
+      </div>
+      <div class="ai-info">
+        <div class="ai-name" style="color:${a.color}">${a.name} <span style="font-size:10px;color:var(--muted);font-weight:400;">${a.role}</span></div>
+        <div class="ai-output">${a.output}</div>
+      </div>
+      <div class="ai-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+function showAgentDetail(i) {
+  const a = AGENTS[i];
+  document.getElementById('sheetContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:${a.bg};color:${a.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;">${a.i}</div>
+      <div><div style="font-size:17px;font-weight:600;color:${a.color}">${a.name}</div><div style="font-size:11px;color:var(--muted)">${a.role}</div></div>
+    </div>
+    <div style="font-size:13px;color:var(--slate);line-height:1.65;margin-bottom:14px;">${a.detail}</div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Key Tasks</div>
+    ${a.tasks.map(t=>`<div style="padding:8px 10px;background:var(--paper);border-radius:6px;font-size:12px;color:var(--slate);margin-bottom:6px;">• ${t}</div>`).join('')}
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:12px 0 8px;">Latest Output</div>
+    <div style="padding:10px 12px;background:${a.bg};border-radius:8px;font-size:12px;color:${a.color};line-height:1.5;">${a.output}</div>
+  `;
+  openSheet();
+}
+
+// ── PIPELINE ─────────────────────────────────────────────────────────
+function buildPipeline(filter='all') {
+  const list = document.getElementById('pipelineList');
+  const filtered = filter==='all' ? PIPELINE :
+    filter==='hot' ? PIPELINE.filter(p=>p.hot) :
+    PIPELINE.filter(p=>p.stage===parseInt(filter));
+  list.innerHTML = filtered.map((p,i) => `
+    <div class="crm-row" onclick="showLeadDetail(${PIPELINE.indexOf(p)})">
+      <div>
+        <div class="crm-name">${p.name}${p.hot?' 🔥':''}</div>
+        <div class="crm-detail">${p.company}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="crm-stage stage-${p.stage>3?4:p.stage}">Stage ${p.stage}</div>
+        <div style="font-size:10px;color:var(--muted)">${p.last}</div>
+      </div>
+    </div>
+    ${i<filtered.length-1?'<div class="divider"></div>':''}
+  `).join('');
+}
+
+function showPipelineTab(tab, el) {
+  document.querySelectorAll('.p-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildPipeline(tab);
+}
+
+function showLeadDetail(i) {
+  const p = PIPELINE[i];
+  const t = TARGETS.find(t=>t.name.includes(p.name.split(' ')[0]));
+  document.getElementById('sheetContent').innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:18px;font-weight:600;">${p.name}${p.hot?' 🔥':''}</div>
+      <div style="font-size:12px;color:var(--muted)">${p.company} · ${p.type}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="background:var(--paper);border-radius:8px;padding:10px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Stage</div><div style="font-size:16px;font-weight:600;">${p.stage} of 4</div></div>
+      <div style="background:var(--paper);border-radius:8px;padding:10px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Last Contact</div><div style="font-size:16px;font-weight:600;">${p.last}</div></div>
+    </div>
+    ${t ? `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Target Score: ${t.score}/100</div>
+    ${Object.entries(t.scores).map(([k,v])=>`
+      <div class="target-score" style="margin-bottom:6px;">
+        <div style="font-size:11px;color:var(--slate);min-width:80px;text-transform:capitalize;">${k==='ccl'?'CCL Focus':k}</div>
+        <div class="score-bar"><div class="score-fill" style="width:${v}%;background:${v>85?'#5C8A3C':v>70?'#D4A843':'#C0392B'}"></div></div>
+        <div class="score-num" style="color:${v>85?'#5C8A3C':v>70?'#D4A843':'#C0392B'}">${v}</div>
+      </div>`).join('')}` : ''}
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:12px 0 6px;">Next Action</div>
+    <div style="padding:10px 12px;background:var(--gold-bg);border:1px solid var(--gold);border-radius:8px;font-size:12px;color:var(--brown);">${p.next}</div>
+  `;
+  openSheet();
+}
+
+// ── TARGET FUNCTION ───────────────────────────────────────────────────
+function buildTargets() {
+  const list = document.getElementById('targetList');
+  list.innerHTML = TARGETS.sort((a,b)=>b.score-a.score).map(t=>`
+    <div class="target-card ${t.hot?'hot':''}">
+      <div class="target-header">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">${t.name}${t.hot?' <span class="hot-badge">HOT</span>':''}</div>
+          <div style="font-size:11px;color:var(--muted);">${t.type} · ${t.area}</div>
+        </div>
+        <div style="font-size:22px;font-weight:700;color:${t.score>85?'#5C8A3C':t.score>70?'#D4A843':'#C0392B'}">${t.score}</div>
+      </div>
+      <div class="target-score">
+        <div style="font-size:11px;color:var(--muted);min-width:60px;">Overall</div>
+        <div class="score-bar"><div class="score-fill" style="width:${t.score}%;background:${t.score>85?'#5C8A3C':t.score>70?'#D4A843':'#C0392B'}"></div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function runTargetFunction() {
+  const btn = document.getElementById('targetBtn');
+  btn.textContent='🎯 Reagan is scoring leads...';
+  btn.disabled=true;
+  await new Promise(r=>setTimeout(r,1500));
+  // Simulate scoring update
+  TARGETS.forEach(t=>{ t.score = Math.min(99, t.score + Math.floor(Math.random()*4-1)); });
+  buildTargets();
+  btn.textContent='🎯 Run Target Function';
+  btn.disabled=false;
+}
+
+// ── CHAT ──────────────────────────────────────────────────────────────
+const QUINN_SYSTEM = `You are Quinn, CEO Agent for Ortho Dog — a dog brace and supplement company based in Black Mountain, NC. You manage 7 agents: Reagan (leads), Abby (outreach), Aly (operations), Sadie (pipeline), Fawn (relations), Casey (fulfillment), Morgan (marketing). You speak to Elsa and Adam, the two co-owners. Be warm, decisive, and specific. You know the business deeply — CCL braces, hip braces, vet referral partnerships, snowbird dog owners, NC/SC/GA territory. Keep responses to 3-4 sentences max for mobile.`;
+
+async function startBriefing() {
+  chatRunning=true;
+  document.getElementById('chatSend').disabled=true;
+  const area = document.getElementById('chatArea');
+  const tid = addTyping();
+  try {
+    const reply = await callAPI(QUINN_SYSTEM, `Give Elsa and Adam their morning briefing for Ortho Dog. Today is ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}. Cover: leads, outreach, pipeline, operations, fulfillment, and give 2 action items. Keep it tight — this is mobile.`);
+    removeTyping(tid);
+    addMsg('quinn', reply);
+    chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    removeTyping(tid);
+    addMsg('quinn','Team is ready. Ask me anything about leads, pipeline, or what needs your attention today.');
+  }
+  chatRunning=false;
+  document.getElementById('chatSend').disabled=false;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text||chatRunning) return;
+  input.value='';
+  chatRunning=true;
+  document.getElementById('chatSend').disabled=true;
+  addMsg('you', text);
+  chatHistory.push({role:'user',content:text});
+  const tid=addTyping();
+  try {
+    const msgs = chatHistory.slice(-6);
+    const reply = await callAPI(QUINN_SYSTEM, null, msgs);
+    removeTyping(tid);
+    addMsg('quinn', reply);
+    chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    removeTyping(tid);
+    addMsg('quinn','Let me look into that — can you give me a bit more detail?');
+  }
+  chatRunning=false;
+  document.getElementById('chatSend').disabled=false;
+}
+
+function addMsg(from, text) {
+  const area=document.getElementById('chatArea');
+  const div=document.createElement('div');
+  div.className='chat-msg'+(from==='you'?' you':'');
+  if(from==='quinn') {
+    div.innerHTML=`<div class="cm-av" style="background:var(--quinn);color:#fff;font-family:'Fraunces',serif;font-size:13px;">Q</div><div class="cm-body"><div class="cm-name">Quinn</div><div class="cm-bubble quinn-bubble">${text}</div></div>`;
+  } else {
+    div.innerHTML=`<div class="cm-av" style="background:var(--brown);color:#fff;font-size:10px;font-weight:700;">E</div><div class="cm-body"><div class="cm-name" style="text-align:right">You</div><div class="cm-bubble">${text}</div></div>`;
+  }
+  area.appendChild(div);
+  area.scrollTop=area.scrollHeight;
+}
+
+function addTyping() {
+  const id='t'+Date.now();
+  const area=document.getElementById('chatArea');
+  const div=document.createElement('div');
+  div.className='chat-msg'; div.id=id;
+  div.innerHTML=`<div class="cm-av" style="background:var(--quinn);color:#fff;font-family:'Fraunces',serif;font-size:13px;">Q</div><div class="cm-body"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  area.appendChild(div); area.scrollTop=area.scrollHeight; return id;
+}
+function removeTyping(id){const el=document.getElementById(id);if(el)el.remove();}
+
+async function callAPI(system, userMsg, history) {
+  const msgs = history || [{role:'user',content:userMsg}];
+  if(!history) msgs[0]={role:'user',content:userMsg};
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,system,messages:msgs})
+  });
+  const data=await res.json();
+  if(data.content?.[0]?.text) return data.content[0].text;
+  throw new Error('API error');
+}
+
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();sendChat();}
+});
+
+// ── SHEET ────────────────────────────────────────────────────────────
+function openSheet(){document.getElementById('detailSheet').classList.add('open');document.getElementById('sheetOverlay').classList.add('show');}
+function closeSheet(){document.getElementById('detailSheet').classList.remove('open');document.getElementById('sheetOverlay').classList.remove('show');}
+
+// ── SLACK SETUP ───────────────────────────────────────────────────────
+function showSlackSetup(){
+  document.getElementById('sheetContent').innerHTML=`
+    <div style="font-size:17px;font-weight:600;margin-bottom:6px;">Set up Slack</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Create your free Ortho Dog workspace in 2 minutes. Then Quinn can ping you instantly when something needs attention.</div>
+    <div class="setup-step">
+      <div class="step-num">1</div>
+      <div class="step-info"><div class="step-title">Go to slack.com</div><div class="step-desc">Click "Get Started Free" — sign in with elsaboyette@gmail.com</div></div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">2</div>
+      <div class="step-info"><div class="step-title">Create workspace</div><div class="step-desc">Name it "Ortho Dog" — this is your team hub</div></div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">3</div>
+      <div class="step-info"><div class="step-title">Create 4 channels</div><div class="step-desc">#quinn-alerts · #pipeline · #marketing-approvals · #fulfillment</div></div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">4</div>
+      <div class="step-info"><div class="step-title">Invite Adam</div><div class="step-desc">Add gaboyette722@gmail.com as a member</div></div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">5</div>
+      <div class="step-info"><div class="step-title">Get your webhook URL</div><div class="step-desc">Settings > Integrations > Incoming Webhooks > Add. Paste the URL back to Claude and Quinn will start posting there automatically.</div></div>
+    </div>
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:6px;">What Quinn posts to Slack</div>
+      <div style="font-size:12px;color:var(--slate);line-height:1.8;">• HOT lead flagged by Reagan<br>• Dr. reply received — action needed<br>• Content ready for your approval<br>• New 5-star review collected<br>• Weekly brief every Monday</div>
+    </div>
+    <button class="big-btn btn-brown" style="margin-top:16px;" onclick="window.open('https://slack.com','_blank')">Open Slack.com →</button>
+  `;
+  openSheet();
+}
+
+// ── COPY SCRIPT ───────────────────────────────────────────────────────
+function copyScript(){
+  const script = document.querySelector('.script-box').textContent;
+  navigator.clipboard.writeText(script).then(()=>{
+    const btn=document.querySelector('.int-btn, .big-btn[onclick="copyScript()"]');
+    alert('Script copied! Paste into script.google.com');
+  });
+}
+
+// ── PWA MANIFEST ─────────────────────────────────────────────────────
+const manifest = {
+  name:"Ortho Dog Command Center",
+  short_name:"Ortho Dog",
+  start_url:".",
+  display:"standalone",
+  background_color:"#FAF7F2",
+  theme_color:"#3D2B1F",
+  icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%233D2B1F'/><text y='.9em' font-size='80' x='10'>🐾</text></svg>",sizes:"192x192",type:"image/svg+xml"}]
+};
+const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('manifestLink').href=URL.createObjectURL(blob);
+
+init();
+</script>
+</body>
+</html>

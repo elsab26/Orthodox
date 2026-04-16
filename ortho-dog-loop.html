@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ortho Dog — Marketing Loop</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brown:#3D2B1F;--tan:#A07850;--tan2:#C9A878;
+  --cream:#FAF7F2;--paper:#F2EDE4;--border:#E4DDD2;
+  --white:#FFFFFF;--muted:#8A837C;--slate:#4A4540;
+  --gold:#D4A843;--gold-bg:#FFF8E8;
+  --quinn:#1A2E1A;--quinn2:#2D4A2D;--green:#5C8A3C;--green-light:#EDF4E6;
+  --morgan:#7A4F00;--morgan-bg:#FFF4E0;
+  --casey:#27500A;--casey-bg:#EAF3DE;
+  --reagan:#3C3489;--reagan-bg:#EEEDFE;
+  --abby:#72243E;--abby-bg:#FBEAF0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--brown);min-height:100vh;padding:0 0 48px;}
+
+/* TOP */
+.top-bar{background:var(--quinn);padding:18px 24px;display:flex;align-items:center;gap:14px;}
+.tb-av{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:14px;border:2px solid rgba(255,255,255,0.25);}
+.tb-info{}
+.tb-name{font-family:'Fraunces',serif;font-size:16px;color:#fff;font-weight:400;}
+.tb-sub{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;}
+.tb-right{margin-left:auto;font-size:11px;color:rgba(255,255,255,0.55);text-align:right;line-height:1.5;}
+
+/* INTRO */
+.intro{padding:20px 24px 0;}
+.intro-title{font-family:'Fraunces',serif;font-size:22px;font-weight:300;color:var(--brown);margin-bottom:4px;}
+.intro-title em{color:var(--tan);font-style:italic;}
+.intro-sub{font-size:12px;color:var(--muted);line-height:1.6;max-width:580px;}
+
+/* LOOP DIAGRAM */
+.loop-wrap{padding:24px;position:relative;}
+
+/* Animated flow line */
+.flow-hint{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.fh-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:glow 1.5s infinite;}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* The loop grid — positions nodes like the hand-drawn diagram */
+.loop-grid{
+  display:grid;
+  grid-template-columns:1fr 40px 1fr;
+  grid-template-rows:auto 40px auto 40px auto;
+  gap:0;
+  max-width:700px;
+  margin:0 auto;
+}
+
+/* NODES */
+.node{
+  background:var(--white);
+  border-radius:14px;
+  border:1.5px solid var(--border);
+  padding:16px;
+  cursor:pointer;
+  transition:box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+  position:relative;
+  user-select:none;
+}
+.node:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(61,43,31,0.1);}
+.node.active{box-shadow:0 0 0 3px rgba(92,138,60,0.2);}
+.node-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.node-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.node-name{font-size:13px;font-weight:600;}
+.node-role{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:6px;}
+.node-desc{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:8px;}
+.node-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{font-size:9px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.05em;}
+.node-output{margin-top:8px;background:var(--paper);border-radius:7px;padding:7px 9px;}
+.no-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:3px;}
+.no-text{font-size:10px;line-height:1.5;color:var(--slate);}
+
+/* OFFER node — spans top */
+.node-offer{
+  grid-column:1/4;
+  background:var(--quinn);
+  border-color:var(--quinn2);
+  border-radius:14px;
+  padding:18px 20px;
+}
+.offer-inner{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.offer-left{flex:1;min-width:180px;}
+.offer-title{font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:#fff;font-style:italic;margin-bottom:4px;}
+.offer-sub{font-size:11px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+.offer-desc{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6;}
+.offer-right{flex:0 0 auto;}
+.offer-channels{display:flex;flex-direction:column;gap:5px;}
+.channel{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:background 0.15s;}
+.channel:hover{background:rgba(255,255,255,0.14);}
+.channel.active-ch{background:rgba(92,138,60,0.3);border-color:var(--green);}
+.ch-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.ch-name{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85);}
+.ch-agent{font-size:9px;color:rgba(255,255,255,0.45);margin-left:auto;}
+
+/* Arrows */
+.arrow-down{display:flex;align-items:center;justify-content:center;color:var(--border);}
+.arrow-right{display:flex;align-items:center;justify-content:center;color:var(--border);}
+.arrow-svg{transition:stroke 0.2s;}
+
+/* Loop arrow visual */
+.loop-arrow{
+  grid-column:3/4;grid-row:3/6;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.loop-path{
+  width:40px;height:100%;
+  border:2px dashed var(--border);
+  border-left:none;
+  border-radius:0 12px 12px 0;
+  position:absolute;right:0;
+}
+
+/* Detail panel */
+.detail-panel{
+  background:var(--white);border-radius:14px;
+  border:1.5px solid var(--border);
+  padding:18px 20px;margin-top:16px;
+  display:none;animation:slideUp 0.25s ease;
+}
+.detail-panel.show{display:block;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dp-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.dp-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.dp-name{font-size:15px;font-weight:600;}
+.dp-role{font-size:10px;color:var(--muted);}
+.dp-body{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.dp-body{grid-template-columns:1fr;}}
+.dp-section{}
+.dp-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:6px;}
+.dp-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.dp-list li{font-size:12px;color:var(--slate);padding:5px 8px;background:var(--paper);border-radius:5px;border-left:2px solid var(--border);}
+.dp-list li.hot{border-left-color:var(--gold);}
+
+/* Quinn oversees banner */
+.quinn-bar{
+  margin:0 24px 0;
+  background:var(--green-light);border:1px solid #C5DBA8;
+  border-radius:8px;padding:9px 14px;
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--quinn);
+}
+.qb-icon{width:20px;height:20px;border-radius:50%;background:var(--quinn);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+
+/* Bottom section label */
+.section-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin:4px 0 10px;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="tb-av">Q</div>
+  <div class="tb-info">
+    <div class="tb-name">Quinn — Marketing Loop</div>
+    <div class="tb-sub">Ortho Dog · Full Cycle View</div>
+  </div>
+  <div class="tb-right">Based on<br>Dante Brunelli framework</div>
+</div>
+
+<div class="intro">
+  <div style="height:20px;"></div>
+  <div class="intro-title">The <em>Ortho Dog</em> Marketing Loop</div>
+  <div class="intro-sub">Every node is an agent. Quinn oversees the full cycle — offer → landing page → organic content → reviews → website → back to organic. Tap any node to see who runs it and what they do.</div>
+</div>
+
+<div style="padding:12px 24px 0;">
+  <div class="quinn-bar">
+    <div class="qb-icon">Q</div>
+    Quinn monitors the full loop daily — she flags when any stage is underperforming and tells Morgan, Casey, Reagan or Abby to act.
+  </div>
+</div>
+
+<div class="loop-wrap">
+  <div class="flow-hint"><div class="fh-dot"></div> Tap any node to expand</div>
+
+  <!-- THE LOOP GRID -->
+  <div class="loop-grid">
+
+    <!-- ROW 1: OFFER (spans full width) -->
+    <div class="node node-offer" id="node-offer" onclick="toggle('offer')" style="margin-bottom:0;">
+      <div class="offer-inner">
+        <div class="offer-left">
+          <div class="offer-title">The Offer</div>
+          <div class="offer-sub">Ortho Dog Braces + Supplements</div>
+          <div class="offer-desc">CCL knee brace, hip brace, hock/wrist support, joint supplements — positioned as the vet-approved alternative to surgery. Quinn ensures the offer is always sharp and the channels are always fed.</div>
+        </div>
+        <div class="offer-right">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);margin-bottom:8px;">Traffic channels</div>
+          <div class="offer-channels">
+            <div class="channel" id="ch-ads" onclick="event.stopPropagation();toggleChannel('ads')">
+              <div class="ch-dot" style="background:#D4A843;"></div>
+              <div class="ch-name">Paid Ads</div>
+              <div class="ch-agent">Morgan</div>
+            </div>
+            <div class="channel" id="ch-organic" onclick="event.stopPropagation();toggleChannel('organic')">
+              <div class="ch-dot" style="background:#5C8A3C;"></div>
+              <div class="ch-name">Organic</div>
+              <div class="ch-agent">Morgan</div>
+            </div>
+            <div class="channel" id="ch-wom" onclick="event.stopPropagation();toggleChannel('wom')">
+              <div class="ch-dot" style="background:#A07850;"></div>
+              <div class="ch-name">Word of Mouth</div>
+              <div class="ch-agent">Fawn + Casey</div>
+            </div>
+            <div class="channel" id="ch-cold" onclick="event.stopPropagation();toggleChannel('cold')">
+              <div class="ch-dot" style="background:#3C3489;"></div>
+              <div class="ch-name">Cold Outreach</div>
+              <div class="ch-agent">Reagan + Abby</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Arrow down left -->
+    <div class="arrow-down">
+      <svg width="24" height="40" viewBox="0 0 24 40"><line x1="12" y1="0" x2="12" y2="32" stroke="#E4DDD2" stroke-width="2"/><polygon points="6,28 12,40 18,28" fill="#E4DDD2"/></svg>
+    </div>
+    <div></div>
+    <div></div>
+
+    <!-- ROW 3: Landing Page (left) + Loop connector (right) -->
+    <div class="node" id="node-landing" onclick="toggle('landing')" style="border-color:#D4A843;">
+      <div class="node-header">
+        <div class="node-av" style="background:var(--morgan-bg);color:var(--morgan);">MO</div>
+        <div>
+          <div class="node-name" style="color:var(--morgan);">Landing Page</div>
+          <div class="node-role" style="color:var(--morgan);opacity:0.7;">Morgan · Conversion</div>
+        </div>
+      </div>
+      <div class="node-desc">Injury-specific pages — CCL brace, hip brace, hock support. Each page is written to convert a worried dog owner searching for answers. Morgan owns copy, Quinn monitors conversion.</div>
+      <div class="node-tags">
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">CCL Page</div>
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Hip Page</div>
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Supplement Page</div>
+      </div>
+      <div class="node-output">
+        <div class="no-label">Morgan's output</div>
+        <div class="no-text">SEO-optimized copy, trust signals, vet quotes, before/after stories. Updated monthly.</div>
+      </div>
+    </div>
+
+    <!-- Middle connector col -->
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div style="width:2px;height:100%;background:var(--border);"></div>
+    </div>
+
+    <!-- Right col: Organic node + loop back arrow -->
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div class="node" id="node-organic-traffic" onclick="toggle('organic-traffic')" style="border-color:#5C8A3C;">
+        <div class="node-header">
+          <div class="node-av" style="background:var(--morgan-bg);color:var(--morgan);">MO</div>
+          <div>
+            <div class="node-name" style="color:var(--morgan);">Organic Traffic</div>
+            <div class="node-role" style="color:var(--morgan);opacity:0.7;">Morgan · Content</div>
+          </div>
+        </div>
+        <div class="node-desc">SEO blogs, Instagram reels, TikToks — all driving people to the website. Reviews amplify this.</div>
+        <div class="node-tags">
+          <div class="tag" style="background:var(--casey-bg);color:var(--casey);">Instagram</div>
+          <div class="tag" style="background:var(--casey-bg);color:var(--casey);">SEO Blog</div>
+          <div class="tag" style="background:var(--casey-bg);color:var(--casey);">TikTok</div>
+        </div>
+      </div>
+      <!-- Loop back arrow label -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;padding:6px 8px 0;">
+        <div style="font-size:9px;color:var(--green);font-weight:600;text-align:right;letter-spacing:0.04em;">↑ Loop feeds back here</div>
+      </div>
+    </div>
+
+    <!-- ROW 4: Arrow down left -->
+    <div class="arrow-down">
+      <svg width="24" height="40" viewBox="0 0 24 40"><line x1="12" y1="0" x2="12" y2="32" stroke="#E4DDD2" stroke-width="2"/><polygon points="6,28 12,40 18,28" fill="#E4DDD2"/></svg>
+    </div>
+    <div></div>
+    <div class="arrow-down">
+      <svg width="24" height="40" viewBox="0 0 24 40"><line x1="12" y1="0" x2="12" y2="32" stroke="#C5DBA8" stroke-width="2" stroke-dasharray="4,3"/><polygon points="6,28 12,40 18,28" fill="#C5DBA8"/></svg>
+    </div>
+
+    <!-- ROW 5: Organic Content (left) → Reviews (right) -->
+    <div class="node" id="node-content" onclick="toggle('content')" style="border-color:var(--morgan);">
+      <div class="node-header">
+        <div class="node-av" style="background:var(--morgan-bg);color:var(--morgan);">MO</div>
+        <div>
+          <div class="node-name" style="color:var(--morgan);">Organic Content</div>
+          <div class="node-role" style="color:var(--morgan);opacity:0.7;">Morgan · Creation</div>
+        </div>
+      </div>
+      <div class="node-desc">The engine. Recovery stories, vet education posts, CCL tear guides, supplement science. Fuels reviews, drives website traffic, builds trust.</div>
+      <div class="node-tags">
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Reels</div>
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Email</div>
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Blog</div>
+        <div class="tag" style="background:var(--morgan-bg);color:var(--morgan);">Ads</div>
+      </div>
+      <div class="node-output">
+        <div class="no-label">This week's queue</div>
+        <div class="no-text">Baxter reel · Vet email campaign · CCL blog · Google ad set. Quinn reviewed. Awaiting your approval.</div>
+      </div>
+    </div>
+
+    <!-- Arrow right: content → reviews -->
+    <div class="arrow-right" style="padding:0 4px;">
+      <svg width="40" height="24" viewBox="0 0 40 24"><line x1="0" y1="12" x2="32" y2="12" stroke="#E4DDD2" stroke-width="2"/><polygon points="28,6 40,12 28,18" fill="#E4DDD2"/></svg>
+    </div>
+
+    <!-- Reviews node -->
+    <div class="node" id="node-reviews" onclick="toggle('reviews')" style="border-color:var(--casey);">
+      <div class="node-header">
+        <div class="node-av" style="background:var(--casey-bg);color:var(--casey);">CA</div>
+        <div>
+          <div class="node-name" style="color:var(--casey);">Reviews</div>
+          <div class="node-role" style="color:var(--casey);opacity:0.7;">Casey · Collection</div>
+        </div>
+      </div>
+      <div class="node-desc">Casey collects 5-star reviews after every fit check. Google, Reddit r/dogs, Chewy. Reviews feed back into organic content AND boost website conversions.</div>
+      <div class="node-tags">
+        <div class="tag" style="background:var(--casey-bg);color:var(--casey);">Google</div>
+        <div class="tag" style="background:var(--casey-bg);color:var(--casey);">Reddit</div>
+        <div class="tag" style="background:var(--casey-bg);color:var(--casey);">Chewy</div>
+      </div>
+      <div class="node-output">
+        <div class="no-label">This week</div>
+        <div class="no-text">4 new 5-star reviews. Baxter's story sent to Morgan for reel. 2 Reddit posts drafted.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Website node — spans full, sits below the loop -->
+  <div style="margin-top:16px;position:relative;">
+    <div style="text-align:center;margin-bottom:6px;">
+      <svg width="24" height="30" viewBox="0 0 24 30"><line x1="12" y1="0" x2="12" y2="22" stroke="#5C8A3C" stroke-width="2" stroke-dasharray="4,3"/><polygon points="6,18 12,30 18,18" fill="#5C8A3C"/></svg>
+    </div>
+    <div class="node" id="node-website" onclick="toggle('website')" style="border-color:var(--green);border-width:2px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:glow 1.5s infinite;"></div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);">The Destination — orthodog.com</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="background:var(--green-light);border-radius:8px;padding:10px 12px;border:1px solid #C5DBA8;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:4px;">Browse</div>
+          <div style="font-size:11px;color:var(--slate);line-height:1.5;">Dog owner finds injury page. Reads CCL guide. Understands the brace option.</div>
+        </div>
+        <div style="background:var(--green-light);border-radius:8px;padding:10px 12px;border:1px solid #C5DBA8;">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:4px;">Understand</div>
+          <div style="font-size:11px;color:var(--slate);line-height:1.5;">Reviews + vet quotes build trust. Morgan's content answers every objection.</div>
+        </div>
+        <div style="background:var(--quinn);border-radius:8px;padding:10px 12px;border:1px solid var(--quinn2);">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tan2);margin-bottom:4px;">Buy + Loop</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5;">Customer buys → Casey fulfills → Review collected → Morgan posts it → More traffic. Loop closed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loop closed indicator -->
+  <div style="text-align:center;margin-top:14px;display:flex;align-items:center;gap:10px;justify-content:center;">
+    <div style="flex:1;height:1px;background:var(--border);"></div>
+    <div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;">↺ Loop repeats — Quinn monitors every cycle</div>
+    <div style="flex:1;height:1px;background:var(--border);"></div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div style="padding:0 24px;">
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-header">
+      <div class="dp-av" id="dpAv"></div>
+      <div>
+        <div class="dp-name" id="dpName"></div>
+        <div class="dp-role" id="dpRole"></div>
+      </div>
+    </div>
+    <div class="dp-body" id="dpBody"></div>
+  </div>
+</div>
+
+<script>
+const DETAILS = {
+  offer: {
+    av:{bg:'#1A2E1A',color:'#fff',text:'Q'},
+    name:'The Offer — Quinn Oversees',
+    role:'CEO Agent · Strategy',
+    left:{label:'What Quinn manages',items:['Keeps offer sharp and competitive','Monitors which channel drives most ROI','Flags underperforming channels to fix','Reviews pricing vs competitor braces']},
+    right:{label:'Ortho Dog offer stack',items:['CCL / Cruciate Care Knee Brace','Hip Hound Hip Brace','Hock Holder + Wrist Wrap','Joint supplement pouches (coming soon)','Wholesale accounts for vet clinics']}
+  },
+  landing: {
+    av:{bg:'#FFF4E0',color:'#7A4F00',text:'MO'},
+    name:'Landing Page — Morgan',
+    role:'Marketing Agent · Conversion Copy',
+    left:{label:'Morgan writes & maintains',items:['CCL brace page — injury explanation + brace solution','Hip brace page — senior dog focus','Supplement landing page (coming soon)','Vet referral landing page']},
+    right:{label:'What converts visitors',items:['Vet quotes and approval badges','Before/after customer stories (Casey feeds these)','Size guide + fit guarantee','FAQ answering surgery objection','Free shipping + easy exchange messaging']}
+  },
+  'organic-traffic': {
+    av:{bg:'#FFF4E0',color:'#7A4F00',text:'MO'},
+    name:'Organic Traffic — Morgan',
+    role:'Marketing Agent · SEO + Social',
+    left:{label:'Morgan publishes',items:['SEO blogs targeting CCL/hip/hock searches','Instagram reels — recovery stories','Reddit posts in r/dogs, r/goldenretrievers','TikToks targeting dog owner pain points']},
+    right:{label:'This feeds',items:['Website traffic (browse + understand)','Brand trust and awareness','Vet referral credibility','Review amplification — posts customer wins','Quinn monitors traffic weekly']}
+  },
+  content: {
+    av:{bg:'#FFF4E0',color:'#7A4F00',text:'MO'},
+    name:'Organic Content — Morgan',
+    role:'Marketing Agent · Full Content Suite',
+    left:{label:'Weekly content queue',items:['Instagram: Baxter recovery reel (Casey photos) ★ HOT','Email: Vet referral campaign — A/B tested','Google Ads: CCL brace set — 3 variants','SEO Blog: Surgery vs brace — CCL keywords']},
+    right:{label:'Quinn\'s review criteria',items:['Does it tell a real dog story?','Does it answer the surgery objection?','Is it vet-credible?','Does it drive to a landing page?','Morgan submits → Quinn reviews → You approve']}
+  },
+  reviews: {
+    av:{bg:'#EAF3DE',color:'#27500A',text:'CA'},
+    name:'Reviews — Casey',
+    role:'Fulfillment Agent · Review Collection',
+    left:{label:'Casey collects from',items:['Day 3 fit check email — ask for review','Post-recovery follow-up at week 6','Vet clinic referral patients','Wholesale account customers']},
+    right:{label:'Where reviews go',items:['Google Business Profile ★ top priority','Chewy product listing','Reddit r/dogs community posts','Morgan repurposes as social content','Casey feeds best stories to Morgan directly']}
+  },
+  website: {
+    av:{bg:'#1A2E1A',color:'#fff',text:'Q'},
+    name:'orthodog.com — Quinn Monitors',
+    role:'CEO Agent · Conversion + Loop Close',
+    left:{label:'Quinn tracks weekly',items:['Conversion rate on CCL brace page','Most visited pages this week','Bounce rate — flags Morgan if high','Which reviews are being read most']},
+    right:{label:'The closed loop',items:['Customer buys brace','Casey ships + does fit check','Casey collects 5-star review','Morgan turns review into content','Content drives new traffic','New visitor lands → buys → loop repeats']}
+  }
+};
+
+let activeNode = null;
+let activeChannel = null;
+
+function toggle(id) {
+  activeNode = activeNode===id ? null : id;
+  renderDetail();
+  document.querySelectorAll('.node').forEach(n => {
+    n.classList.remove('active');
+  });
+  if(activeNode) {
+    const el = document.getElementById(`node-${activeNode}`);
+    if(el) el.classList.add('active');
+  }
+}
+
+function toggleChannel(ch) {
+  activeChannel = activeChannel===ch ? null : ch;
+  document.querySelectorAll('.channel').forEach(c => c.classList.remove('active-ch'));
+  if(activeChannel) document.getElementById(`ch-${activeChannel}`).classList.add('active-ch');
+}
+
+function renderDetail() {
+  const panel = document.getElementById('detailPanel');
+  if(!activeNode || !DETAILS[activeNode]) {
+    panel.className='detail-panel'; return;
+  }
+  const d = DETAILS[activeNode];
+  document.getElementById('dpAv').style.background = d.av.bg;
+  document.getElementById('dpAv').style.color = d.av.color;
+  document.getElementById('dpAv').textContent = d.av.text;
+  document.getElementById('dpName').textContent = d.name;
+  document.getElementById('dpRole').textContent = d.role;
+  document.getElementById('dpBody').innerHTML = `
+    <div class="dp-section">
+      <div class="dp-label">${d.left.label}</div>
+      <ul class="dp-list">${d.left.items.map(i=>`<li${i.includes('★')?` class="hot"`:''}>` + i.replace(' ★ HOT','') + (i.includes('★')?` <span style="color:var(--gold);font-size:9px;font-weight:700;">★ HOT</span>`:'') + `</li>`).join('')}</ul>
+    </div>
+    <div class="dp-section">
+      <div class="dp-label">${d.right.label}</div>
+      <ul class="dp-list">${d.right.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    </div>
+  `;
+  panel.className='detail-panel show';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</body>
+</html>
